@@ -65,7 +65,7 @@ abstract class GenericController<T : Ownership, D : Any, ID : Any, P : Any>(
 
     @DeleteMapping
     fun deleteResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal) =
-        service.deleteResourcesById(ids, principal)
+        service.deleteResourcesByIds(ids, principal)
 
     @PutMapping("/{id}/ownership")
     fun updateOwnership(

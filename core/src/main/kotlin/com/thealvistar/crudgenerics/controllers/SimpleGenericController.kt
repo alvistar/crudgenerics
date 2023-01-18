@@ -28,7 +28,7 @@ abstract class SimpleGenericController<T : Any, D : Any, ID : Any>() {
 
     @DeleteMapping
     fun deleteResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
-        service.deleteResourcesById(ids, principal)
+        service.deleteResourcesByIds(ids, principal)
 
     @DeleteMapping("/{id}")
     fun deleteResourceById(@PathVariable id: ID, principal: Principal?) =

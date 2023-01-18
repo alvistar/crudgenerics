@@ -71,6 +71,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     private fun <C : Any> convert(dto: C): T {
         if (entityClass.isInstance(dto)) {
+            @Suppress("UNCHECKED_CAST")
             return dto as T
         }
 
@@ -80,6 +81,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     private fun <C : Any> update(dto: C, entity: T): T {
         if (entityClass.isInstance(dto)) {
+            @Suppress("UNCHECKED_CAST")
             return dto as T
         }
 
@@ -125,7 +127,6 @@ abstract class GenericService<T : Any, ID : Any>(
 
     fun <D : Any> updateResourceById(id: ID, dto: D, principal: Principal? = null): T {
         val resource = getResourceById(id, principal)
-        securityFilter?.checkPermissions(resource, principal)
 
         return repository.save(update(dto, resource))
     }
@@ -140,7 +141,7 @@ abstract class GenericService<T : Any, ID : Any>(
         return pf.createProjection(clazz, resource)
     }
 
-    fun getResourceById(id: ID, principal: Principal?): T {
+    fun getResourceById(id: ID, principal: Principal? = null): T {
         val resource = repository.findByIdOrNull(id) ?: throw ResourceNotFoundException()
 
         securityFilter?.checkPermissions(resource, principal)
@@ -148,7 +149,7 @@ abstract class GenericService<T : Any, ID : Any>(
         return resource
     }
 
-    fun <P : Any> getResourceById(id: ID, principal: Principal?, clazz: Class<P>): P {
+    fun <P : Any> getResourceById(id: ID, principal: Principal? = null, clazz: Class<P>): P {
         val entity = getResourceById(id, principal)
         return pf.createProjection(clazz, entity)
     }
@@ -163,7 +164,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     fun <P : Any> getResourcesByIds(
         ids: List<ID>,
-        principal: Principal?,
+        principal: Principal? = null,
         clazz: Class<P>
     ): List<P> {
         val resources = repository.findAllById(ids)
@@ -173,7 +174,7 @@ abstract class GenericService<T : Any, ID : Any>(
         return repository.findByIdIn(ids, clazz)
     }
 
-    fun deleteResourceById(id: ID, principal: Principal?) {
+    fun deleteResourceById(id: ID, principal: Principal? = null) {
         val resource = repository.findByIdOrNull(id) ?: throw ResourceNotFoundException()
 
         securityFilter?.checkPermissions(resource, principal)
@@ -181,7 +182,7 @@ abstract class GenericService<T : Any, ID : Any>(
         repository.delete(resource)
     }
 
-    fun deleteResourcesById(ids: List<ID>, principal: Principal?) {
+    fun deleteResourcesByIds(ids: List<ID>, principal: Principal? = null) {
         val resources = repository.findAllById(ids)
 
         resources.forEach { securityFilter?.checkPermissions(it, principal) }
