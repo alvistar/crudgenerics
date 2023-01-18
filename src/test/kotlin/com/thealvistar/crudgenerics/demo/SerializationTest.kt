@@ -36,5 +36,4 @@ class SerializationTest(
 
         result.category?.id shouldBe category.id
     }
-
 }

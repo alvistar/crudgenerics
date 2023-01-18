@@ -2,7 +2,6 @@ package com.thealvistar.crudgenerics.entities
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.thealvistar.crudgenerics.serializers.IdSerializer
-import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -27,4 +26,3 @@ class Product(
     @ManyToMany(targetEntity = Category::class)
     var categories: List<Category>? = null
 )
-

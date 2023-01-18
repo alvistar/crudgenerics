@@ -2,8 +2,8 @@ package com.thealvistar.crudgenerics.entities
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.thealvistar.crudgenerics.serializers.IdSerializerFlat
 import com.thealvistar.crudgenerics.serializers.IdDeserializer
+import com.thealvistar.crudgenerics.serializers.IdSerializerFlat
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType

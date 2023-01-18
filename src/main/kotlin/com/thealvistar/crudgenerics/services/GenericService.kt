@@ -16,25 +16,25 @@ import java.security.Principal
 import java.util.UUID
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-abstract class GenericService<T : Any, ID : Any>(private val securityFilter: SecurityFilter<T>? = null) {
+abstract class GenericService<T : Any, ID : Any>(
+    private val securityFilter: SecurityFilter<T>? = null
+) {
 
     @Autowired
     lateinit var repository: JpaExecutor<T, ID>
 
     @Autowired(required = false)
-    lateinit var converterUpdaters: List<ConverterUpdater<*, *>>
+    lateinit var converterUpdaters: List<ConverterUpdater<*, T>>
 
     @Autowired
     lateinit var om: ObjectMapper
 
-    lateinit var rsqlFilter: RSQLFilter<T, ID>
+    private lateinit var rsqlFilter: RSQLFilter<T, ID>
 
     private val entityClass: Class<T>
-    private val hasOwnership: Boolean
 
     init {
-        entityClass = resolveEntityClass()
-        hasOwnership = hasOwnership()
+        this.entityClass = resolveEntityClass()
     }
 
     @PostConstruct
@@ -45,13 +45,14 @@ abstract class GenericService<T : Any, ID : Any>(private val securityFilter: Sec
     private val pf = SpelAwareProxyProjectionFactory()
 
     internal fun resolveEntityClass(): Class<T> {
-        val type = ResolvableType.forInstance(this).`as`(GenericService::class.java).getGeneric(0)
-        @Suppress("UNCHECKED_CAST")
-        return type.resolve() as Class<T>
-    }
+        val type = ResolvableType.forInstance(this).`as`(GenericService::class.java)
 
-    internal fun hasOwnership(): Boolean {
-        return ResolvableType.forClass(entityClass).isAssignableFrom(Ownership::class.java)
+        if (type.hasUnresolvableGenerics()) {
+            throw IllegalArgumentException("Unable to resolve entity class from generic type $type")
+        }
+
+        @Suppress("UNCHECKED_CAST")
+        return type.getGeneric(0).resolve() as Class<T>
     }
 
     private fun <C : Any> getConverter(dto: C): ConverterUpdater<C, T> {

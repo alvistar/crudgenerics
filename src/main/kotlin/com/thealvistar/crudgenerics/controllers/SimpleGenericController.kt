@@ -3,7 +3,6 @@ package com.thealvistar.crudgenerics.controllers
 import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
 import com.thealvistar.crudgenerics.services.GenericService
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -19,7 +18,6 @@ import java.security.Principal
 
 abstract class SimpleGenericController<T : Any, D : Any, ID : Any>() {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-    @Autowired(required = false)
     lateinit var service: GenericService<T, ID>
 
     @GetMapping(name = "listResources")

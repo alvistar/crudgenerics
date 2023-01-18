@@ -87,7 +87,6 @@ class GenericServiceTest(
 
     @Test
     fun `update resource`() {
-
         val entity = TestEntity(name = "test")
         repository.save(entity)
 

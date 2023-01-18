@@ -1,14 +1,14 @@
 package com.thealvistar.crudgenerics.demo
 
-import org.junit.jupiter.api.Test
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.thealvistar.crudgenerics.entities.Category
 import com.thealvistar.crudgenerics.entities.Product
+import org.junit.jupiter.api.Test
 import java.util.UUID
 
 class ProductEntityTest {
     @Test
-    fun `serialization`() {
+    fun serialization() {
         val category = Category(name = "Fruits", id = UUID.randomUUID())
         val product = Product(name = "Apple", category = category)
         val om = jacksonObjectMapper()

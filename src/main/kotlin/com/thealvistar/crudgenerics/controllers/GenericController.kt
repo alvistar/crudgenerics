@@ -4,8 +4,6 @@ import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
 import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
 import jakarta.validation.Valid
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.ApplicationContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus

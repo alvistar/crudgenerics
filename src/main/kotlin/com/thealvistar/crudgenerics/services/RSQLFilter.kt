@@ -8,13 +8,11 @@ import org.springframework.data.jpa.domain.Specification
 import java.security.Principal
 import java.util.UUID
 
-
 fun <T> ownershipSecurityFilter(principal: Principal): Specification<T> {
     return Specification.where { root, _, cb ->
         cb.equal(root.get<Any>("owner"), UUID.fromString(principal.name))
     }
 }
-
 
 class RSQLFilter<T : Any, ID : Any>(
     private val repository: JpaExecutor<T, ID>,
