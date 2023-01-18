@@ -112,12 +112,12 @@ abstract class GenericService<T : Any, ID : Any>(
         principal = principal
     )
 
-    fun <D : Any, P : Any> create(dto: D, clazz: Class<P>): P {
+    fun <D : Any, P : Any> createResource(dto: D, clazz: Class<P>): P {
         val entity = repository.save(convert(dto))
         return pf.createProjection(clazz, entity)
     }
 
-    fun <D : Any> create(dto: D): T {
+    fun <D : Any> createResource(dto: D): T {
         return repository.save(convert(dto))
     }
 

@@ -1,4 +1,4 @@
-package com.thealvistar.crudgenerics.demo.controllers
+package com.thealvistar.crudgenerics.controllers
 
 import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
 import com.thealvistar.crudgenerics.entities.Ownership
@@ -40,7 +40,7 @@ abstract class GenericController<T : Ownership, D : Any, ID : Any, P : Any>(
         @RequestBody @Valid
         resourceDTO: D
     ): P {
-        return service.create(resourceDTO, projection)
+        return service.createResource(resourceDTO, projection)
     }
 
     @GetMapping("/{id}")

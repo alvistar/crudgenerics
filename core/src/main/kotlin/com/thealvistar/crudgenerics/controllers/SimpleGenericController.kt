@@ -56,7 +56,7 @@ abstract class SimpleGenericController<T : Any, D : Any, ID : Any>() {
     fun createResource(
         @RequestBody @Valid
         resourceDTO: D
-    ): T = service.create(resourceDTO)
+    ): T = service.createResource(resourceDTO)
 
     @PutMapping("/{id}/ownership")
     fun updateOwnership(

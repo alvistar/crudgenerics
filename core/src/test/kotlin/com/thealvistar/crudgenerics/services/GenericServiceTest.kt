@@ -184,7 +184,7 @@ class GenericServiceTest(
     @Test
     fun `create resource with projection`() {
         val entity = TestEntity(name = "test")
-        service.create(entity, MyView::class.java).shouldBeInstanceOf<MyView>()
+        service.createResource(entity, MyView::class.java).shouldBeInstanceOf<MyView>()
 
         repository.findAll().apply {
             size shouldBe 1
@@ -195,7 +195,7 @@ class GenericServiceTest(
     @Test
     fun `create resource`() {
         val entity = TestEntity(name = "test")
-        service.create(entity).shouldBeInstanceOf<TestEntity>()
+        service.createResource(entity).shouldBeInstanceOf<TestEntity>()
 
         repository.findAll().apply {
             size shouldBe 1
