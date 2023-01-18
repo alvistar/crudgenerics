@@ -15,6 +15,7 @@ import org.springframework.test.context.TestConstructor
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.delete
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 import org.springframework.test.web.servlet.put
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -172,14 +173,13 @@ class GenericControllerTest(
 
         every { service.createResource(any()) } returns resource
 
-        mockMvc.put("/test") {
+        mockMvc.post("/test") {
             content = "{\"name\": \"test\"}"
             contentType = MediaType.APPLICATION_JSON
             principal = Principal { "john" }
+        }.andExpect {
+            status { isCreated() }
         }
-            .andExpect {
-                status { isOk() }
-            }
 
         verify {
             service.createResource(
