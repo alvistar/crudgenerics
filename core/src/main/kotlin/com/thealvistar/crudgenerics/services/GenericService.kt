@@ -5,6 +5,7 @@ import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.exceptions.ResourceNotFoundException
 import com.thealvistar.crudgenerics.mappers.ConverterUpdater
 import com.thealvistar.crudgenerics.repositories.JpaExecutor
+import com.thealvistar.crudgenerics.utils.resolveGeneric
 import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ResolvableType
@@ -14,6 +15,7 @@ import org.springframework.data.projection.SpelAwareProxyProjectionFactory
 import org.springframework.data.repository.findByIdOrNull
 import java.security.Principal
 import java.util.UUID
+import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 abstract class GenericService<T : Any, ID : Any>(
@@ -31,10 +33,13 @@ abstract class GenericService<T : Any, ID : Any>(
 
     private lateinit var rsqlFilter: RSQLFilter<T, ID>
 
-    private val entityClass: Class<T>
-
-    init {
-        this.entityClass = resolveEntityClass()
+    @Suppress("UNCHECKED_CAST")
+    private val entityClass: KClass<T> by lazy {
+        resolveGeneric<T>(
+            this,
+            GenericService::class,
+            0
+        ).kotlin
     }
 
     @PostConstruct
@@ -89,11 +94,11 @@ abstract class GenericService<T : Any, ID : Any>(
         return entity
     }
 
-    fun <P> listResources(
+    fun <P : Any> listResources(
         filter: String? = null,
         pageable: Pageable = Pageable.unpaged(),
         principal: Principal? = null,
-        projection: Class<P>
+        projection: KClass<P>
     ): Page<P> =
         rsqlFilter.filterResourcesProjection(
             filter = filter,
@@ -112,9 +117,9 @@ abstract class GenericService<T : Any, ID : Any>(
         principal = principal
     )
 
-    fun <D : Any, P : Any> createResource(dto: D, clazz: Class<P>): P {
+    fun <D : Any, P : Any> createResource(dto: D, clazz: KClass<P>): P {
         val entity = repository.save(convert(dto))
-        return pf.createProjection(clazz, entity)
+        return pf.createProjection(clazz.java, entity)
     }
 
     fun <D : Any> createResource(dto: D): T {
@@ -135,10 +140,10 @@ abstract class GenericService<T : Any, ID : Any>(
         id: ID,
         dto: D,
         principal: Principal? = null,
-        clazz: Class<P>
+        clazz: KClass<P>
     ): P {
         val resource = updateResourceById(id, dto, principal)
-        return pf.createProjection(clazz, resource)
+        return pf.createProjection(clazz.java, resource)
     }
 
     fun getResourceById(id: ID, principal: Principal? = null): T {
@@ -149,9 +154,9 @@ abstract class GenericService<T : Any, ID : Any>(
         return resource
     }
 
-    fun <P : Any> getResourceById(id: ID, principal: Principal? = null, clazz: Class<P>): P {
+    fun <P : Any> getResourceById(id: ID, principal: Principal? = null, clazz: KClass<P>): P {
         val entity = getResourceById(id, principal)
-        return pf.createProjection(clazz, entity)
+        return pf.createProjection(clazz.java, entity)
     }
 
     fun getResourcesByIds(ids: List<ID>, principal: Principal?): List<T> {
@@ -165,13 +170,13 @@ abstract class GenericService<T : Any, ID : Any>(
     fun <P : Any> getResourcesByIds(
         ids: List<ID>,
         principal: Principal? = null,
-        clazz: Class<P>
+        clazz: KClass<P>
     ): List<P> {
         val resources = repository.findAllById(ids)
 
         resources.forEach { securityFilter?.checkPermissions(it, principal) }
 
-        return repository.findByIdIn(ids, clazz)
+        return repository.findByIdIn(ids, clazz.java)
     }
 
     fun deleteResourceById(id: ID, principal: Principal? = null) {

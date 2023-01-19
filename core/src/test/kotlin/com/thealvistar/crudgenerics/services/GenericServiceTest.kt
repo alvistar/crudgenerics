@@ -111,7 +111,7 @@ class GenericServiceTest(
 
         service.listResources(
             pageable = Pageable.unpaged(),
-            projection = MyView::class.java
+            projection = MyView::class
         ).apply {
             size shouldBe 3
             get().toList()[0].shouldBeInstanceOf<MyView>()
@@ -138,7 +138,7 @@ class GenericServiceTest(
         repository.save(entity)
 
         val newEntity = TestEntity(id = entity.id, name = "test2")
-        service.updateResourceById(entity.id!!, newEntity, clazz = MyView::class.java)
+        service.updateResourceById(entity.id!!, newEntity, clazz = MyView::class)
 
         repository.findAll().apply {
             size shouldBe 1
@@ -184,7 +184,7 @@ class GenericServiceTest(
     @Test
     fun `create resource with projection`() {
         val entity = TestEntity(name = "test")
-        service.createResource(entity, MyView::class.java).shouldBeInstanceOf<MyView>()
+        service.createResource(entity, MyView::class).shouldBeInstanceOf<MyView>()
 
         repository.findAll().apply {
             size shouldBe 1
@@ -226,7 +226,7 @@ class GenericServiceTest(
         val entity = TestEntity(name = "test")
         repository.save(entity)
 
-        service.getResourceById(entity.id!!, clazz = MyView::class.java)
+        service.getResourceById(entity.id!!, clazz = MyView::class)
             .shouldBeInstanceOf<MyView>()
     }
 
@@ -239,7 +239,7 @@ class GenericServiceTest(
 
         securityService.getResourceById(
             entity.id!!,
-            clazz = MyView::class.java,
+            clazz = MyView::class,
             principal = principal
         )
             .shouldBeInstanceOf<MyView>()
@@ -288,7 +288,7 @@ class GenericServiceTest(
 
         service.getResourcesByIds(
             entities.map { it.id!! },
-            clazz = MyView::class.java
+            clazz = MyView::class
         ).apply {
             count() shouldBe 3
             first().shouldBeInstanceOf<MyView>()

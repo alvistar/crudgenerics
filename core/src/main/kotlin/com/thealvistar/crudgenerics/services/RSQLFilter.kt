@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import java.security.Principal
 import java.util.UUID
+import kotlin.reflect.KClass
 
 fun <T> ownershipSecurityFilter(principal: Principal): Specification<T> {
     return Specification.where { root, _, cb ->
@@ -44,15 +45,15 @@ class RSQLFilter<T : Any, ID : Any>(
         return repository.findAll(specification, pageable)
     }
 
-    fun <P> filterResourcesProjection(
-        projection: Class<P>,
+    fun <P : Any> filterResourcesProjection(
+        projection: KClass<P>,
         filter: String? = null,
         pageable: Pageable = Pageable.unpaged(),
         principal: Principal? = null
     ): Page<P> {
         val specification = getListSpecification(filter, principal)
         return repository.findBy<T, Page<P>>(specification) {
-            it.`as`(projection).page(pageable)
+            it.`as`(projection.java).page(pageable)
         }
     }
 }
