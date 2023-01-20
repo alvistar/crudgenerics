@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 abstract class GenericService<T : Any, ID : Any>(
-    private val securityFilter: SecurityFilter<T>? = null
+    protected val securityFilter: SecurityFilter<T>? = null
 ) {
 
     @Autowired

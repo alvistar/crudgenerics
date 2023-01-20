@@ -9,14 +9,29 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import jakarta.persistence.Id
+import kotlin.reflect.KClass
+import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
+fun getIdField(clazz: KClass<*>) = clazz.memberProperties.find {
+    it.javaField?.isAnnotationPresent(Id::class.java) ?: false
+}
+
+private fun resolveIdField(clazz: KClass<*>): KProperty<*> {
+    val field = getIdField(clazz) ?: clazz.memberProperties.find { it.name == "id" }
+
+    return field ?: throw IllegalArgumentException("Unable to resolve id field for class $clazz")
+}
+
+/**
+ * Serialize an object to a JSON object with only the id field.
+ */
+
 class IdSerializer<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
-        val idField = value::class.memberProperties.find {
-            it.javaField?.isAnnotationPresent(Id::class.java) ?: false
-        } ?: throw RuntimeException("No @Id field found in ${value::class}")
+        val idField = resolveIdField(value::class)
 
         gen.writeStartObject()
         gen.writeStringField("id", idField.call(value).toString())
@@ -24,17 +39,23 @@ class IdSerializer<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
     }
 }
 
-class IdSerializerFlat<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
+/**
+ * Serialize an object to a JSON string representing the id field.
+ */
+
+class IdFlatSerializer<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
-        val idField = value::class.memberProperties.find {
-            it.javaField?.isAnnotationPresent(Id::class.java) ?: false
-        } ?: throw RuntimeException("No @Id field found in ${value::class}")
+        val idField = resolveIdField(value::class)
 
         gen.writeString(idField.call(value).toString())
     }
 }
 
-class IdDeserializer<T : Any>(clazz: Class<T>? = null, property: BeanProperty? = null) :
+/**
+ * Deserialize an object from a JSON representing the id field.
+ */
+
+class IdFlatDeserializer<T : Any>(clazz: Class<T>? = null, property: BeanProperty? = null) :
     JsonDeserializer<T>(), ContextualDeserializer {
 
     private lateinit var clazz: Class<T>
@@ -43,7 +64,10 @@ class IdDeserializer<T : Any>(clazz: Class<T>? = null, property: BeanProperty? =
         ctxt: DeserializationContext,
         property: BeanProperty
     ): JsonDeserializer<*> {
-        clazz = property.type.contentType.rawClass as Class<T>
+        @Suppress("UNCHECKED_CAST")
+        // Check if are dealing with collection
+        clazz = (property.type.contentType?.rawClass ?: property.type.rawClass) as Class<T>
+
         return this
     }
 
@@ -51,13 +75,12 @@ class IdDeserializer<T : Any>(clazz: Class<T>? = null, property: BeanProperty? =
         val instance = clazz.getDeclaredConstructor().newInstance()
             ?: throw RuntimeException("No class found")
 
-        val idField = clazz.declaredFields.find {
-            it.isAnnotationPresent(Id::class.java)
-        } ?: throw RuntimeException("No @Id field found in $clazz")
+        val idField = resolveIdField(instance::class)
 
-        idField.apply {
-            isAccessible = true
-            set(instance, p.readValueAs(this.type))
+        if (idField is KMutableProperty<*>) {
+            val returnType = idField.returnType.classifier as KClass<*>
+
+            idField.setter.call(instance, p.readValueAs(returnType.java))
         }
 
         return instance

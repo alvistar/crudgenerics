@@ -11,11 +11,17 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import java.security.Principal
 
-abstract class DtoGenericController<T : Any, ID : Any, D : Any>() :
+abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
+    service: GenericService<T, ID>? = null
+) :
     IGenericController<D, ID> {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
-    lateinit var service: GenericService<T, ID>
+    private lateinit var autoService: GenericService<T, ID>
+
+    open val service: GenericService<T, ID> by lazy {
+        service ?: autoService
+    }
 
     override fun listResources(
         pageable: Pageable,

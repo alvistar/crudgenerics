@@ -1,9 +1,6 @@
 package com.thealvistar.crudgenerics.demo.entities
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.thealvistar.crudgenerics.serializers.IdDeserializer
-import com.thealvistar.crudgenerics.serializers.IdSerializerFlat
+import com.thealvistar.crudgenerics.serializers.IdFlatSerDerCollection
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -20,7 +17,6 @@ class Order(
     var id: UUID? = null,
 
     @ManyToMany(targetEntity = Product::class)
-    @JsonSerialize(contentUsing = IdSerializerFlat::class)
-    @JsonDeserialize(contentUsing = IdDeserializer::class)
+    @IdFlatSerDerCollection
     var products: List<Product>? = null
 )

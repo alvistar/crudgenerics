@@ -1,7 +1,6 @@
 package com.thealvistar.crudgenerics.demo.entities
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.thealvistar.crudgenerics.serializers.IdSerializer
+import com.thealvistar.crudgenerics.serializers.IdFlatSerDer
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
@@ -20,7 +19,7 @@ class Product(
     var name: String? = null,
 
     @ManyToOne(targetEntity = Category::class, fetch = FetchType.EAGER)
-    @JsonSerialize(using = IdSerializer::class)
+    @IdFlatSerDer
     var category: Category? = null,
 
     @ManyToMany(targetEntity = Category::class)
