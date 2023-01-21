@@ -6,7 +6,9 @@ import com.thealvistar.crudgenerics.exceptions.ResourceNotFoundException
 import com.thealvistar.crudgenerics.mappers.ConverterUpdater
 import com.thealvistar.crudgenerics.repositories.JpaExecutor
 import com.thealvistar.crudgenerics.utils.resolveGeneric
+import com.thealvistar.crudgenerics.utils.throwIfNotEmpty
 import jakarta.annotation.PostConstruct
+import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ResolvableType
 import org.springframework.data.domain.Page
@@ -30,6 +32,9 @@ abstract class GenericService<T : Any, ID : Any>(
 
     @Autowired
     lateinit var om: ObjectMapper
+
+    @Autowired
+    lateinit var validator: Validator
 
     private lateinit var rsqlFilter: RSQLFilter<T, ID>
 
@@ -60,10 +65,13 @@ abstract class GenericService<T : Any, ID : Any>(
         return type.getGeneric(0).resolve() as Class<T>
     }
 
-    private fun <C : Any> getConverter(dto: C): ConverterUpdater<C, T> {
-        @Suppress("UNCHECKED_CAST")
+    private fun <C : Any> getConverter(dto: C): ConverterUpdater<C, T>? {
+        if (!::converterUpdaters.isInitialized) {
+            return null
+        }
 
-        return converterUpdaters.first {
+        @Suppress("UNCHECKED_CAST")
+        return converterUpdaters.firstOrNull() {
             val generics =
                 ResolvableType
                     .forClass(it::class.java)
@@ -71,7 +79,7 @@ abstract class GenericService<T : Any, ID : Any>(
                     .generics
 
             generics[0].isAssignableFrom(dto::class.java)
-        } as ConverterUpdater<C, T>
+        } as ConverterUpdater<C, T>?
     }
 
     private fun <C : Any> convert(dto: C): T {
@@ -80,7 +88,7 @@ abstract class GenericService<T : Any, ID : Any>(
             return dto as T
         }
 
-        return getConverter(dto).convert(dto)
+        return getConverter(dto)?.convert(dto)
             ?: throw RuntimeException("Converter returned null for $dto")
     }
 
@@ -90,8 +98,17 @@ abstract class GenericService<T : Any, ID : Any>(
             return dto as T
         }
 
-        getConverter(dto).update(dto, entity)
-        return entity
+        val converter = getConverter(dto)
+
+        if (converter != null) {
+            getConverter(dto)?.update(dto, entity)
+            return entity
+        }
+
+        // Try deserializing into the object
+        val updatedDto = om.readerForUpdating(entity).readValue(dto as String, entityClass.java)
+        validator.validate(updatedDto).throwIfNotEmpty()
+        return updatedDto
     }
 
     fun <P : Any> listResources(

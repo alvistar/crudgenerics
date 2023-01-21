@@ -13,6 +13,7 @@ import io.mockk.every
 import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import io.mockk.verify
+import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -129,6 +130,30 @@ class GenericServiceTest(
         repository.findAll().apply {
             size shouldBe 1
             get(0).name shouldBe "test2"
+        }
+    }
+
+    @Test
+    fun `update resource from json`() {
+        val entityA = TestEntityWithOwnership(name = "testA", owner = UUID.randomUUID())
+        ownerRepository.save(entityA)
+
+        val entityB = TestEntity(name = "testB", reference = entityA)
+        repository.save(entityB)
+
+        @Language("JSON")
+        val json = """
+            {
+                "name": "testC"
+            }
+        """.trimIndent()
+
+        service.updateResourceById(entityB.id!!, json)
+
+        repository.findAll().apply {
+            size shouldBe 1
+            get(0).name shouldBe "testC"
+            get(0).reference?.name shouldBe "testA"
         }
     }
 

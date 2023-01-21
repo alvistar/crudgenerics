@@ -27,14 +27,6 @@ interface IGenericController<D : Any, ID : Any> {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteResourceById(@PathVariable id: ID, principal: Principal?)
 
-    @PutMapping("/{id}")
-    fun updateResourceById(
-        @PathVariable id: ID,
-        principal: Principal?,
-        @RequestBody @Valid
-        resourceDTO: D
-    ): Any
-
     @GetMapping(params = ["id"])
     fun getResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?): List<Any>
 

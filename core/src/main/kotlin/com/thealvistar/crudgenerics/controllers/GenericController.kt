@@ -56,7 +56,8 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> : IGeneric
     override fun getResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
         service.getResourcesByIds(ids, principal, projection)
 
-    override fun updateResourceById(
+    @PutMapping("/{id}")
+    fun updateResourceById(
         @PathVariable id: ID,
         principal: Principal?,
         @RequestBody @Valid
