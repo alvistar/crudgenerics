@@ -148,27 +148,6 @@ class DtoGenericControllerTest(
     }
 
     @Test
-    fun `get resources by ids`() {
-        val uuid1 = UUID.randomUUID()
-        val uuid2 = UUID.randomUUID()
-
-        every { service.getResourcesByIds(listOf(uuid1, uuid2), any()) } returns listOf()
-
-        mockMvc.get("/test") {
-            param("id", uuid1.toString())
-            param("id", uuid2.toString())
-            principal = Principal { "john" }
-        }
-            .andExpect {
-                status { isOk() }
-            }
-
-        verify {
-            service.getResourcesByIds(listOf(uuid1, uuid2), match { it.name == "john" })
-        }
-    }
-
-    @Test
     fun `get resource by id`() {
         val uuid = UUID.randomUUID()
 

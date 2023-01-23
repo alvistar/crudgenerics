@@ -113,31 +113,6 @@ class GenericControllerTest(
     }
 
     @Test
-    fun getResourcesByIds() {
-        every { service.getResourcesByIds(any(), any(), MyProjection::class) } returns listOf()
-
-        val uuid1 = UUID.randomUUID()
-        val uuid2 = UUID.randomUUID()
-
-        mockMvc.get("/test") {
-            param("id", uuid1.toString())
-            param("id", uuid2.toString())
-            principal = Principal { "john" }
-        }
-            .andExpect {
-                status { isOk() }
-            }
-
-        verify {
-            service.getResourcesByIds(
-                ids = listOf(uuid1, uuid2),
-                principal = match { it.name == "john" },
-                clazz = MyProjection::class
-            )
-        }
-    }
-
-    @Test
     fun updateResourceById() {
         every {
             service.updateResourceById(

@@ -15,12 +15,16 @@ import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.registerBean
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpStatus
 import org.springframework.http.RequestEntity
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.ResponseStatus
 import java.security.Principal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -36,8 +40,7 @@ val logger = mu.KotlinLogging.logger {}
  * @param P The projection interface
  */
 @Suppress("UNCHECKED_CAST")
-abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> :
-    IGenericController<D, ID> {
+abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     lateinit var service: GenericService<T, ID>
@@ -64,7 +67,8 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> :
         projectionClass = generics[3] as KClass<P>
     }
 
-    override fun listResources(
+    @GetMapping
+    fun listResources(
         pageable: Pageable,
         filter: String?,
         principal: Principal?
@@ -72,28 +76,32 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> :
         return service.listResources(filter, pageable, principal, projectionClass)
     }
 
-    override fun createResource(
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createResource(
         @RequestBody @Valid
         resourceDTO: D
     ): P {
         return service.createResource(resourceDTO, projectionClass)
     }
 
-    override fun getResourceById(@PathVariable id: ID, principal: Principal?) =
+    @GetMapping("/{id}")
+    fun getResourceById(@PathVariable id: ID, principal: Principal?) =
         service.getResourceById(id, principal, projectionClass)
 
-    override fun getResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
-        service.getResourcesByIds(ids, principal, projectionClass)
-
-    override fun deleteResourceById(@PathVariable id: ID, principal: Principal?) =
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteResourceById(@PathVariable id: ID, principal: Principal?) =
         service.deleteResourceById(id, principal)
 
     @DeleteMapping
-    override fun deleteResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
         service.deleteResourcesByIds(ids, principal)
 
     @PutMapping("/{id}/ownership")
-    override fun updateOwnership(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateOwnership(
         @PathVariable id: ID,
         principal: Principal,
         @RequestBody dto: UpdateOwnerDto

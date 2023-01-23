@@ -5,6 +5,7 @@ import com.thealvistar.crudgenerics.entities.TestEntityWithOwnership
 import com.thealvistar.crudgenerics.exceptions.ForbiddenException
 import com.thealvistar.crudgenerics.repositories.TestRepository
 import com.thealvistar.crudgenerics.repositories.TestWithOwnershipRepository
+import io.github.perplexhub.rsql.RSQLJPAAutoConfiguration
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.collections.shouldNotContain
 import io.kotest.matchers.shouldBe
@@ -48,7 +49,7 @@ interface MyView {
 @DataJpaTest
 @Import(TestService::class, TestSecurityService::class, TestOwnershipService::class)
 @AutoConfigureJson
-@ImportAutoConfiguration(ValidationAutoConfiguration::class)
+@ImportAutoConfiguration(ValidationAutoConfiguration::class, RSQLJPAAutoConfiguration::class)
 @ExtendWith(MockKExtension::class)
 class GenericServiceTest(
     val repository: TestRepository,
@@ -307,6 +308,16 @@ class GenericServiceTest(
                 entities.map { it.id!! },
                 principal = principal
             )
+        }
+    }
+
+    @Test
+    fun `get resources by IDs using filter`() {
+        val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
+        val ids = "${entities[0].id},${entities[1].id}"
+
+        service.listResources("id=in=($ids)").apply {
+            count() shouldBe 2
         }
     }
 

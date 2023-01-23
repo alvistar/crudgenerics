@@ -83,7 +83,7 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     }
 
     @GetMapping
-    fun listResources(pageable: Pageable, filter: String?, principal: Principal?): Page<out Any> =
+    fun listResources(pageable: Pageable, filter: String?, principal: Principal?): Page<T> =
         service.listResources(filter, pageable, principal)
 
     @DeleteMapping
@@ -95,13 +95,6 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteResourceById(@PathVariable id: ID, principal: Principal?) =
         service.deleteResourceById(id, principal)
-
-    @GetMapping(params = ["id"])
-    fun getResourcesByIds(
-        @RequestParam("id") ids: List<ID>,
-        principal: Principal?
-    ): List<T> =
-        service.getResourcesByIds(ids, principal)
 
     @GetMapping("/{id}")
     fun getResourceById(@PathVariable id: ID, principal: Principal?) =
