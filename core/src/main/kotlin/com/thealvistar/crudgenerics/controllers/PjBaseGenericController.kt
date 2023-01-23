@@ -25,14 +25,24 @@ val logger = mu.KotlinLogging.logger {}
  * @param ID The ID class
  * @param P The projection interface
  */
-abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> : IGenericController<D, ID> {
+abstract class PjBaseGenericController<T : Any, ID : Any, D : Any, P : Any> :
+    IGenericController<D, ID> {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     lateinit var service: GenericService<T, ID>
 
     @Suppress("UNCHECKED_CAST")
-    private val projection: KClass<P> by lazy {
-        (resolveGeneric<P>(this, GenericController::class, 3).kotlin)
+    val projection: KClass<P> by lazy {
+        (resolveGeneric<P>(this, PjBaseGenericController::class, 3).kotlin)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    val entityClass: KClass<T> by lazy {
+        resolveGeneric<T>(
+            this,
+            PjBaseGenericController::class,
+            0
+        ).kotlin
     }
 
     override fun listResources(
@@ -55,14 +65,6 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> : IGeneric
 
     override fun getResourcesByIds(@RequestParam("id") ids: List<ID>, principal: Principal?) =
         service.getResourcesByIds(ids, principal, projection)
-
-    @PutMapping("/{id}")
-    fun updateResourceById(
-        @PathVariable id: ID,
-        principal: Principal?,
-        @RequestBody @Valid
-        resourceDTO: D
-    ) = service.updateResourceById(id, resourceDTO, principal, projection)
 
     override fun deleteResourceById(@PathVariable id: ID, principal: Principal?) =
         service.deleteResourceById(id, principal)

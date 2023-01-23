@@ -22,10 +22,14 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.UUID
 
+private data class FooDto(
+    val name: String
+)
+
 @Profile("test")
 @RestController
 @RequestMapping("/test")
-class FakeController : DtoGenericController<TestEntity, UUID, TestEntity>()
+private class FakeController : DtoGenericController<TestEntity, UUID, FooDto>()
 
 @WebMvcTest(FakeController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -119,7 +123,7 @@ class DtoGenericControllerTest(
         verify {
             service.updateResourceById(
                 id = uuid,
-                dto = match { (it as TestEntity).name == "test" },
+                dto = match { (it as FooDto).name == "test" },
                 principal = match { it.name == "john" }
             )
         }
@@ -183,7 +187,7 @@ class DtoGenericControllerTest(
 
         verify {
             service.createResource(
-                dto = match { (it as TestEntity).name == "test" }
+                dto = match { (it as FooDto).name == "test" }
             )
         }
     }

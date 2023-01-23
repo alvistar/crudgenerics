@@ -23,14 +23,14 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.UUID
 
-class MyDto
+private class MyDto
 
-interface MyProjection
+private interface MyProjection
 
 @Profile("test")
 @RestController
 @RequestMapping("/test")
-class FakeGenericController : GenericController<TestEntity, UUID, MyDto, MyProjection>()
+private class FakeGenericController : PjDtoGenericController<TestEntity, UUID, MyDto, MyProjection>()
 
 @WebMvcTest(FakeGenericController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)

@@ -17,6 +17,8 @@ import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJson
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -42,10 +44,11 @@ interface MyView {
     val name: String
 }
 
-@DataJpaTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@DataJpaTest
 @Import(TestService::class, TestSecurityService::class, TestOwnershipService::class)
 @AutoConfigureJson
+@ImportAutoConfiguration(ValidationAutoConfiguration::class)
 @ExtendWith(MockKExtension::class)
 class GenericServiceTest(
     val repository: TestRepository,

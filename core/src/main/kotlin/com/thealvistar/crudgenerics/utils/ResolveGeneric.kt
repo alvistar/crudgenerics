@@ -18,3 +18,15 @@ fun <T> resolveGeneric(instance: Any, asType: KClass<*>, argIndex: Int): Class<T
     @Suppress("UNCHECKED_CAST")
     return genericType.resolve() as Class<T>
 }
+
+fun getGenerics(clazz: KClass<*>, asType: KClass<*>): List<KClass<*>> {
+    val type = ResolvableType.forClass(clazz.java).`as`(asType.java)
+
+    if (type.hasUnresolvableGenerics()) {
+        throw IllegalArgumentException("Unable to resolve generics  $type")
+    }
+
+    return type.generics.map {
+        it.resolve()?.kotlin ?: throw IllegalArgumentException("Unable to resolve generics  $type")
+    }
+}

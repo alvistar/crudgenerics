@@ -21,7 +21,7 @@ import java.util.UUID
 @Profile("test")
 @RestController
 @RequestMapping("/test")
-class FakeBasicGenericController : BasicGenericController<TestEntity, UUID>()
+private class FakeBasicGenericController : BasicGenericController<TestEntity, UUID>()
 
 @WebMvcTest(FakeBasicGenericController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
