@@ -140,7 +140,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     fun <D : Any> createResource(dto: D, principal: Principal? = null): T {
         val converted = convert(dto)
-        securityFilter?.beforeCreate(converted, principal)
+        securityFilter?.canCreate(converted, principal)
         return repository.save(convert(dto))
     }
 
@@ -160,7 +160,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun <D : Any> updateResourceById(id: ID, dto: D, principal: Principal? = null): T {
         val resource = getResourceById(id, principal)
         val updated = update(dto, resource)
-        securityFilter?.beforeUpdate(updated, principal)
+        securityFilter?.canUpdate(updated, principal)
 
         return repository.save(updated)
     }
@@ -178,7 +178,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun getResourceById(id: ID, principal: Principal? = null): T {
         val resource = repository.findByIdOrNull(id) ?: throw ResourceNotFoundException()
 
-        securityFilter?.afterGet(resource, principal)
+        securityFilter?.canView(resource, principal)
 
         return resource
     }
@@ -191,7 +191,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun getResourcesByIds(ids: List<ID>, principal: Principal?): List<T> {
         val resources = repository.findAllById(ids)
 
-        resources.forEach { securityFilter?.afterGet(it, principal) }
+        resources.forEach { securityFilter?.canView(it, principal) }
 
         return repository.findAllById(ids)
     }
@@ -203,7 +203,7 @@ abstract class GenericService<T : Any, ID : Any>(
     ): List<P> {
         val resources = repository.findAllById(ids)
 
-        resources.forEach { securityFilter?.afterGet(it, principal) }
+        resources.forEach { securityFilter?.canView(it, principal) }
 
         return repository.findByIdIn(ids, clazz.java)
     }
@@ -211,7 +211,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun deleteResourceById(id: ID, principal: Principal? = null) {
         val resource = repository.findByIdOrNull(id) ?: throw ResourceNotFoundException()
 
-        securityFilter?.afterGet(resource, principal)
+        securityFilter?.canView(resource, principal)
 
         repository.delete(resource)
     }
@@ -219,7 +219,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun deleteResourcesByIds(ids: List<ID>, principal: Principal? = null) {
         val resources = repository.findAllById(ids)
 
-        resources.forEach { securityFilter?.afterGet(it, principal) }
+        resources.forEach { securityFilter?.canView(it, principal) }
 
         repository.deleteAll(resources)
     }
@@ -231,7 +231,7 @@ abstract class GenericService<T : Any, ID : Any>(
             throw RuntimeException("Resource $resource is not an Ownership")
         }
 
-        securityFilter?.afterGet(resource, principal)
+        securityFilter?.canView(resource, principal)
 
         resource.owner = newOwner
         repository.save(resource)

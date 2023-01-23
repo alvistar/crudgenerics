@@ -181,13 +181,13 @@ class GenericServiceTest(
         repository.save(entity)
 
         val newEntity = TestEntity(id = entity.id, name = "test2")
-        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
-        every { mockSecurityFilter.beforeUpdate(newEntity, any()) }.returns(Unit)
+        every { mockSecurityFilter.canView(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.canUpdate(newEntity, any()) }.returns(Unit)
 
         securityService.updateResourceById(entity.id!!, dto = newEntity, principal = principal)
 
-        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
-        verify(exactly = 1) { mockSecurityFilter.beforeUpdate(newEntity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.canView(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.canUpdate(newEntity, principal) }
     }
 
     @Test
@@ -197,7 +197,7 @@ class GenericServiceTest(
 
         val newEntity = TestEntity(id = entity.id, name = "test2")
         every {
-            mockSecurityFilter.afterGet(
+            mockSecurityFilter.canView(
                 entity,
                 principal
             )
@@ -237,11 +237,11 @@ class GenericServiceTest(
     @Test
     fun `create resource with security filter`() {
         val entity = TestEntity(name = "test")
-        every { mockSecurityFilter.beforeCreate(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.canCreate(entity, principal) }.returns(Unit)
 
         securityService.createResource(entity, principal = principal)
 
-        verify(exactly = 1) { mockSecurityFilter.beforeCreate(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.canCreate(entity, principal) }
     }
 
     @Test
@@ -276,7 +276,7 @@ class GenericServiceTest(
         val entity = TestEntity(name = "test")
         repository.save(entity)
 
-        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.canView(entity, principal) }.returns(Unit)
 
         securityService.getResourceById(
             entity.id!!,
@@ -285,14 +285,14 @@ class GenericServiceTest(
         )
             .shouldBeInstanceOf<MyView>()
 
-        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.canView(entity, principal) }
     }
 
     @Test
     fun `get resources by ids and security`() {
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
-        every { mockSecurityFilter.afterGet(any(), principal) }.returns(Unit)
+        every { mockSecurityFilter.canView(any(), principal) }.returns(Unit)
 
         securityService.getResourcesByIds(
             entities.map { it.id!! },
@@ -301,7 +301,7 @@ class GenericServiceTest(
             count() shouldBe 3
         }
 
-        verify(exactly = 3) { mockSecurityFilter.afterGet(any(), principal) }
+        verify(exactly = 3) { mockSecurityFilter.canView(any(), principal) }
     }
 
     @Test
@@ -309,7 +309,7 @@ class GenericServiceTest(
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
         every {
-            mockSecurityFilter.afterGet(
+            mockSecurityFilter.canView(
                 any(),
                 principal
             )
@@ -363,13 +363,13 @@ class GenericServiceTest(
         val entity = TestEntity(name = "test")
         repository.save(entity)
 
-        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.canView(entity, principal) }.returns(Unit)
 
         securityService.deleteResourceById(entity.id!!, principal = principal)
 
         repository.count() shouldBe 0
 
-        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.canView(entity, principal) }
     }
 
     @Test
@@ -378,7 +378,7 @@ class GenericServiceTest(
         repository.save(entity)
 
         every {
-            mockSecurityFilter.afterGet(
+            mockSecurityFilter.canView(
                 entity,
                 principal
             )
@@ -395,14 +395,14 @@ class GenericServiceTest(
     fun `delete resources by id with security`() {
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
-        every { mockSecurityFilter.afterGet(any(), principal) }.returns(Unit)
+        every { mockSecurityFilter.canView(any(), principal) }.returns(Unit)
 
         securityService.deleteResourcesByIds(
             entities.map { it.id!! },
             principal = principal
         )
 
-        verify(exactly = 3) { mockSecurityFilter.afterGet(any(), principal) }
+        verify(exactly = 3) { mockSecurityFilter.canView(any(), principal) }
 
         repository.count() shouldBe 0
     }

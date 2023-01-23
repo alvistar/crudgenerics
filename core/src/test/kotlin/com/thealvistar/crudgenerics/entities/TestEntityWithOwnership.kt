@@ -16,5 +16,5 @@ class TestEntityWithOwnership(
 
     var name: String? = null,
 
-    override var owner: UUID?
+    override var owner: UUID? = null
 ) : Ownership
