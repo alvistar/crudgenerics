@@ -181,11 +181,13 @@ class GenericServiceTest(
         repository.save(entity)
 
         val newEntity = TestEntity(id = entity.id, name = "test2")
-        every { mockSecurityFilter.checkPermissions(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.beforeUpdate(newEntity, any()) }.returns(Unit)
 
         securityService.updateResourceById(entity.id!!, dto = newEntity, principal = principal)
 
-        verify(exactly = 1) { mockSecurityFilter.checkPermissions(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.beforeUpdate(newEntity, principal) }
     }
 
     @Test
@@ -195,7 +197,7 @@ class GenericServiceTest(
 
         val newEntity = TestEntity(id = entity.id, name = "test2")
         every {
-            mockSecurityFilter.checkPermissions(
+            mockSecurityFilter.afterGet(
                 entity,
                 principal
             )
@@ -213,7 +215,7 @@ class GenericServiceTest(
     @Test
     fun `create resource with projection`() {
         val entity = TestEntity(name = "test")
-        service.createResource(entity, MyView::class).shouldBeInstanceOf<MyView>()
+        service.createResource(entity, clazz = MyView::class).shouldBeInstanceOf<MyView>()
 
         repository.findAll().apply {
             size shouldBe 1
@@ -230,6 +232,16 @@ class GenericServiceTest(
             size shouldBe 1
             get(0).name shouldBe "test"
         }
+    }
+
+    @Test
+    fun `create resource with security filter`() {
+        val entity = TestEntity(name = "test")
+        every { mockSecurityFilter.beforeCreate(entity, principal) }.returns(Unit)
+
+        securityService.createResource(entity, principal = principal)
+
+        verify(exactly = 1) { mockSecurityFilter.beforeCreate(entity, principal) }
     }
 
     @Test
@@ -264,7 +276,7 @@ class GenericServiceTest(
         val entity = TestEntity(name = "test")
         repository.save(entity)
 
-        every { mockSecurityFilter.checkPermissions(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
 
         securityService.getResourceById(
             entity.id!!,
@@ -273,14 +285,14 @@ class GenericServiceTest(
         )
             .shouldBeInstanceOf<MyView>()
 
-        verify(exactly = 1) { mockSecurityFilter.checkPermissions(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
     }
 
     @Test
     fun `get resources by ids and security`() {
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
-        every { mockSecurityFilter.checkPermissions(any(), principal) }.returns(Unit)
+        every { mockSecurityFilter.afterGet(any(), principal) }.returns(Unit)
 
         securityService.getResourcesByIds(
             entities.map { it.id!! },
@@ -289,7 +301,7 @@ class GenericServiceTest(
             count() shouldBe 3
         }
 
-        verify(exactly = 3) { mockSecurityFilter.checkPermissions(any(), principal) }
+        verify(exactly = 3) { mockSecurityFilter.afterGet(any(), principal) }
     }
 
     @Test
@@ -297,7 +309,7 @@ class GenericServiceTest(
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
         every {
-            mockSecurityFilter.checkPermissions(
+            mockSecurityFilter.afterGet(
                 any(),
                 principal
             )
@@ -351,13 +363,13 @@ class GenericServiceTest(
         val entity = TestEntity(name = "test")
         repository.save(entity)
 
-        every { mockSecurityFilter.checkPermissions(entity, principal) }.returns(Unit)
+        every { mockSecurityFilter.afterGet(entity, principal) }.returns(Unit)
 
         securityService.deleteResourceById(entity.id!!, principal = principal)
 
         repository.count() shouldBe 0
 
-        verify(exactly = 1) { mockSecurityFilter.checkPermissions(entity, principal) }
+        verify(exactly = 1) { mockSecurityFilter.afterGet(entity, principal) }
     }
 
     @Test
@@ -366,7 +378,7 @@ class GenericServiceTest(
         repository.save(entity)
 
         every {
-            mockSecurityFilter.checkPermissions(
+            mockSecurityFilter.afterGet(
                 entity,
                 principal
             )
@@ -383,14 +395,14 @@ class GenericServiceTest(
     fun `delete resources by id with security`() {
         val entities = (1..3).map { repository.save(TestEntity(name = "TestEntity$it")) }
 
-        every { mockSecurityFilter.checkPermissions(any(), principal) }.returns(Unit)
+        every { mockSecurityFilter.afterGet(any(), principal) }.returns(Unit)
 
         securityService.deleteResourcesByIds(
             entities.map { it.id!! },
             principal = principal
         )
 
-        verify(exactly = 3) { mockSecurityFilter.checkPermissions(any(), principal) }
+        verify(exactly = 3) { mockSecurityFilter.afterGet(any(), principal) }
 
         repository.count() shouldBe 0
     }

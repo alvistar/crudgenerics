@@ -8,5 +8,11 @@ interface SecurityFilter<T> {
     fun getSpecificationForList(principal: Principal): Specification<T>
 
     @Throws(ForbiddenException::class)
-    fun checkPermissions(resource: T, principal: Principal?)
+    fun afterGet(resource: T, principal: Principal?) {}
+
+    @Throws(ForbiddenException::class)
+    fun beforeCreate(resource: T, principal: Principal?) {}
+
+    @Throws(ForbiddenException::class)
+    fun beforeUpdate(resource: T, principal: Principal?) {}
 }

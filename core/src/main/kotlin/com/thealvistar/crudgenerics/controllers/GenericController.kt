@@ -79,10 +79,11 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun createResource(
+        principal: Principal?,
         @RequestBody @Valid
         resourceDTO: D
     ): P {
-        return service.createResource(resourceDTO, projectionClass)
+        return service.createResource(resourceDTO, principal, clazz = projectionClass)
     }
 
     @GetMapping("/{id}")

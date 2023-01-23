@@ -172,7 +172,7 @@ class DtoGenericControllerTest(
     fun `create resource`() {
         val resource = TestEntity(id = UUID.randomUUID(), name = "test")
 
-        every { service.createResource(any()) } returns resource
+        every { service.createResource(any(), any()) } returns resource
 
         mockMvc.post("/test") {
             content = "{\"name\": \"test\"}"
@@ -184,7 +184,8 @@ class DtoGenericControllerTest(
 
         verify {
             service.createResource(
-                dto = match { (it as FooDto).name == "test" }
+                dto = match { (it as FooDto).name == "test" },
+                principal = match { it.name == "john" }
             )
         }
     }

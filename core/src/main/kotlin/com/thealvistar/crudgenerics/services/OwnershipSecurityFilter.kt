@@ -13,7 +13,7 @@ class OwnershipSecurityFilter<T : Any> : SecurityFilter<T> {
         }
     }
 
-    override fun checkPermissions(resource: T, principal: Principal?) {
+    override fun afterGet(resource: T, principal: Principal?) {
         if (resource !is Ownership) {
             return
         }

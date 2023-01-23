@@ -103,9 +103,10 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun createResource(
+        principal: Principal?,
         @RequestBody @Valid
         resourceDTO: D
-    ): T = service.createResource(resourceDTO)
+    ): T = service.createResource(resourceDTO, principal)
 
     @PutMapping("/{id}/ownership")
     @ResponseStatus(HttpStatus.NO_CONTENT)

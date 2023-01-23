@@ -72,11 +72,12 @@ class GenericControllerTest(
 
     @Test
     fun createResource() {
-        every { service.createResource(any(), MyProjection::class) } returns mockk()
+        every { service.createResource(any(), any(), clazz = MyProjection::class) } returns mockk()
 
         mockMvc.post("/test") {
             contentType = MediaType.APPLICATION_JSON
             content = "{}"
+            principal = Principal { "john" }
         }
             .andExpect {
                 status { isCreated() }
@@ -85,6 +86,7 @@ class GenericControllerTest(
         verify {
             service.createResource(
                 dto = match { it is MyDto },
+                principal = match { it.name == "john" },
                 clazz = MyProjection::class
             )
         }
