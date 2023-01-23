@@ -105,10 +105,14 @@ abstract class GenericService<T : Any, ID : Any>(
             return entity
         }
 
-        // Try deserializing into the object
-        val updatedDto = om.readerForUpdating(entity).readValue(dto as String, entityClass.java)
-        validator.validate(updatedDto).throwIfNotEmpty()
-        return updatedDto
+        // If they passed as a JSON try to convert it to DTO
+        if (dto is String) {
+            val updatedDto = om.readerForUpdating(entity).readValue(dto, entityClass.java)
+            validator.validate(updatedDto).throwIfNotEmpty()
+            return updatedDto
+        }
+
+        throw RuntimeException("Unable to covert $dto")
     }
 
     fun <P : Any> listResources(

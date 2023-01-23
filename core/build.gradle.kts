@@ -20,5 +20,7 @@ dependencies {
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
+    implementation("io.github.wimdeblauwe:error-handling-spring-boot-starter:4.0.0")
+
     testRuntimeOnly("com.h2database:h2:2.1.214")
 }

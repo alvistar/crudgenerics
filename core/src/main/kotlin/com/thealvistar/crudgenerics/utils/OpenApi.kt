@@ -27,6 +27,3 @@ fun requestBodyCustomizer(method: KFunction<*>, entityClass: KClass<*>): Operati
         operation
     }
 }
-
-inline fun <reified T : Any> requestBodyCustomizer(method: KFunction<*>) =
-    requestBodyCustomizer(method, T::class)

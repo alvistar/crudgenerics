@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToOne
+import jakarta.validation.constraints.NotNull
 import org.springframework.context.annotation.Profile
 import java.util.UUID
 
@@ -15,6 +16,7 @@ class TestEntity(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
+    @NotNull
     var name: String? = null,
 
     @OneToOne

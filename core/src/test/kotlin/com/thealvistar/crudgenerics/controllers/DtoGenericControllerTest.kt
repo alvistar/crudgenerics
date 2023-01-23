@@ -5,6 +5,8 @@ import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.services.GenericService
 import io.mockk.every
 import io.mockk.verify
+import jakarta.validation.Validator
+import jakarta.validation.constraints.Size
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
@@ -23,6 +25,7 @@ import java.security.Principal
 import java.util.UUID
 
 private data class FooDto(
+    @field:Size(min = 1, max = 10)
     val name: String
 )
 
@@ -36,6 +39,7 @@ private class FakeController : DtoGenericController<TestEntity, UUID, FooDto>()
 @Import(FakeController::class)
 class DtoGenericControllerTest(
     private val mockMvc: MockMvc,
+    private val validator: Validator,
     @MockkBean val service: GenericService<TestEntity, UUID>
 ) {
     @Test
@@ -127,6 +131,20 @@ class DtoGenericControllerTest(
                 principal = match { it.name == "john" }
             )
         }
+    }
+
+    @Test
+    fun `update resource by id, invalid dto`() {
+        val uuid = UUID.randomUUID()
+
+        mockMvc.put("/test/$uuid") {
+            content = """{"name": ""}"""
+            contentType = MediaType.APPLICATION_JSON
+            principal = Principal { "john" }
+        }
+            .andExpect {
+                status { isBadRequest() }
+            }
     }
 
     @Test
