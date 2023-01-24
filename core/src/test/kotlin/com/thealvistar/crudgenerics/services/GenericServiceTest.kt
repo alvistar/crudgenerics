@@ -43,6 +43,7 @@ class TestOwnershipService : GenericService<TestEntityWithOwnership, UUID>()
 
 interface MyView {
     val name: String
+    val reference: TestEntityWithOwnership
 }
 
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
@@ -242,6 +243,26 @@ class GenericServiceTest(
         securityService.createResource(entity, principal = principal)
 
         verify(exactly = 1) { mockSecurityFilter.canCreate(entity, principal) }
+    }
+
+    @Test
+    fun `create resource with projection and relation`() {
+        every { mockSecurityFilter.canCreate(any(), any()) }.returns(Unit)
+
+        val entityWithOwnership = TestEntityWithOwnership().apply {
+            name = "ownerEntity"
+            ownerRepository.save(this)
+        }
+
+        val refEntity = TestEntityWithOwnership().apply {
+            id = entityWithOwnership.id
+        }
+
+        val entity = TestEntity(name = "test", reference = refEntity)
+
+        securityService.createResource(entity, null, MyView::class).apply {
+            reference.name shouldBe "ownerEntity"
+        }
     }
 
     @Test

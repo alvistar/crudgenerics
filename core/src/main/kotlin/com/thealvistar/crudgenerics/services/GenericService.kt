@@ -8,6 +8,8 @@ import com.thealvistar.crudgenerics.repositories.JpaExecutor
 import com.thealvistar.crudgenerics.utils.resolveGeneric
 import com.thealvistar.crudgenerics.utils.throwIfNotEmpty
 import jakarta.annotation.PostConstruct
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ResolvableType
@@ -15,12 +17,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.projection.SpelAwareProxyProjectionFactory
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.transaction.annotation.Transactional
 import java.security.Principal
 import java.util.UUID
 import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-abstract class GenericService<T : Any, ID : Any>(
+open abstract class GenericService<T : Any, ID : Any>(
     protected var securityFilter: SecurityFilter<T>? = null
 ) {
 
@@ -36,7 +39,10 @@ abstract class GenericService<T : Any, ID : Any>(
     @Autowired
     lateinit var validator: Validator
 
-    private lateinit var rsqlFilter: RSQLFilter<T, ID>
+    @PersistenceContext
+    lateinit var em: EntityManager
+
+    open lateinit var rsqlFilter: RSQLFilter<T, ID>
 
     @Suppress("UNCHECKED_CAST")
     protected val entityClass: KClass<T> by lazy {
@@ -141,15 +147,19 @@ abstract class GenericService<T : Any, ID : Any>(
     fun <D : Any> createResource(dto: D, principal: Principal? = null): T {
         val converted = convert(dto)
         securityFilter?.canCreate(converted, principal)
-        return repository.save(convert(dto))
+        return repository.saveAndFlush(converted)
     }
 
-    fun <D : Any, P : Any> createResource(
+    @Transactional
+    open fun <D : Any, P : Any> createResource(
         dto: D,
         principal: Principal? = null,
         clazz: KClass<P>
     ): P {
         val entity = createResource(dto, principal)
+
+        em.refresh(entity)
+
         return pf.createProjection(clazz.java, entity)
     }
 
