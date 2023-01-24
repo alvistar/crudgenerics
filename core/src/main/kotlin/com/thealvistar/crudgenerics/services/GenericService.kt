@@ -21,7 +21,7 @@ import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 abstract class GenericService<T : Any, ID : Any>(
-    protected val securityFilter: SecurityFilter<T>? = null
+    protected var securityFilter: SecurityFilter<T>? = null
 ) {
 
     @Autowired
@@ -39,7 +39,7 @@ abstract class GenericService<T : Any, ID : Any>(
     private lateinit var rsqlFilter: RSQLFilter<T, ID>
 
     @Suppress("UNCHECKED_CAST")
-    private val entityClass: KClass<T> by lazy {
+    protected val entityClass: KClass<T> by lazy {
         resolveGeneric<T>(
             this,
             GenericService::class,

@@ -55,4 +55,42 @@ class OwnershipSecurityFilterExTest(
             securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
         }
     }
+
+    @Test
+    fun `canCreate with null id`() {
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val johnId = UUID.randomUUID()
+        val aliceID = UUID.randomUUID()
+
+        val estServer = TestEntityWithOwnership()
+
+        val iotSvc = TestEntity().apply {
+            this.reference = estServer
+        }
+
+        shouldNotThrow<ForbiddenException> {
+            securityFilter.canCreate(iotSvc, Principal { johnId.toString() })
+        }
+
+        shouldNotThrow<ForbiddenException> {
+            securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
+        }
+    }
+
+    @Test
+    fun `canCreate with null reference`() {
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val johnId = UUID.randomUUID()
+        val aliceID = UUID.randomUUID()
+
+        val iotSvc = TestEntity()
+
+        shouldNotThrow<ForbiddenException> {
+            securityFilter.canCreate(iotSvc, Principal { johnId.toString() })
+        }
+
+        shouldNotThrow<ForbiddenException> {
+            securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
+        }
+    }
 }

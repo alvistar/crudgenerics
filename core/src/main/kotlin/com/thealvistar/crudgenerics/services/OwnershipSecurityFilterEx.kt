@@ -37,8 +37,13 @@ class OwnershipSecurityFilterEx<T : Any>(val em: EntityManager, val entityClass:
                 resource.javaClass.getMethod("get${relationship.name.replaceFirstChar(Char::titlecase)}")
                     .invoke(resource)
 
+            @Suppress("FoldInitializerAndIfToElvis")
+            if (re == null) {
+                return
+            }
+
             // Get id value of re entity
-            val id = em.entityManagerFactory.persistenceUnitUtil.getIdentifier(re)
+            val id = em.entityManagerFactory.persistenceUnitUtil.getIdentifier(re) ?: return
 
             val relatedEntity = em.getReference(
                 relationship.javaType,

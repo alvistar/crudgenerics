@@ -5,15 +5,13 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 
 /**
- * Serialize an object to a JSON object with only the id field.
+ * Serialize an object to a JSON string representing the id field.
  */
 
-class IdSerializer<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
+class IdFlatSerializer<T : Any>(clazz: Class<T>? = null) : StdSerializer<T>(clazz) {
     override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
         val idField = resolveIdField(value::class)
 
-        gen.writeStartObject()
-        gen.writeStringField("id", idField.call(value).toString())
-        gen.writeEndObject()
+        gen.writeString(idField.call(value).toString())
     }
 }
