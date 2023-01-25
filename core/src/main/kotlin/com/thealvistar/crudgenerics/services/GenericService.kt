@@ -23,29 +23,29 @@ import java.util.UUID
 import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
-open abstract class GenericService<T : Any, ID : Any>(
-    protected var securityFilter: SecurityFilter<T>? = null
+abstract class GenericService<T : Any, ID : Any>(
+    protected open var securityFilter: SecurityFilter<T>? = null
 ) {
 
     @Autowired
-    lateinit var repository: JpaExecutor<T, ID>
+    protected open lateinit var repository: JpaExecutor<T, ID>
 
     @Autowired(required = false)
-    lateinit var converterUpdaters: List<ConverterUpdater<*, T>>
+    protected open lateinit var converterUpdaters: List<ConverterUpdater<*, T>>
 
     @Autowired
-    lateinit var om: ObjectMapper
+    protected open lateinit var om: ObjectMapper
 
     @Autowired
-    lateinit var validator: Validator
+    protected open lateinit var validator: Validator
 
     @PersistenceContext
-    lateinit var em: EntityManager
+    protected open lateinit var em: EntityManager
 
-    open lateinit var rsqlFilter: RSQLFilter<T, ID>
+    protected open lateinit var rsqlFilter: RSQLFilter<T, ID>
 
     @Suppress("UNCHECKED_CAST")
-    protected val entityClass: KClass<T> by lazy {
+    protected open val entityClass: KClass<T> by lazy {
         resolveGeneric<T>(
             this,
             GenericService::class,
@@ -58,7 +58,7 @@ open abstract class GenericService<T : Any, ID : Any>(
         rsqlFilter = RSQLFilter(repository, securityFilter)
     }
 
-    private val pf = SpelAwareProxyProjectionFactory()
+    protected open val pf = SpelAwareProxyProjectionFactory()
 
     internal fun resolveEntityClass(): Class<T> {
         val type = ResolvableType.forInstance(this).`as`(GenericService::class.java)
