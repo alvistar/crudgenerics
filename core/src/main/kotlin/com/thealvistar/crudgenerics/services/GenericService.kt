@@ -77,7 +77,7 @@ abstract class GenericService<T : Any, ID : Any>(
         }
 
         @Suppress("UNCHECKED_CAST")
-        return converterUpdaters.firstOrNull() {
+        return converterUpdaters.firstOrNull {
             val generics =
                 ResolvableType
                     .forClass(it::class.java)
