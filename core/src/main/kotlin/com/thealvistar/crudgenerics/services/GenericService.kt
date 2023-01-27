@@ -123,7 +123,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     fun <P : Any> listResources(
         filter: String? = null,
-        pageable: Pageable = Pageable.unpaged(),
+        pageable: Pageable = Pageable.ofSize(20),
         principal: Principal? = null,
         projection: KClass<P>
     ): Page<P> =
@@ -136,7 +136,7 @@ abstract class GenericService<T : Any, ID : Any>(
 
     open fun listResources(
         filter: String? = null,
-        pageable: Pageable = Pageable.unpaged(),
+        pageable: Pageable = Pageable.ofSize(20),
         principal: Principal? = null
     ) = rsqlFilter.filterResources(
         filter = filter,
