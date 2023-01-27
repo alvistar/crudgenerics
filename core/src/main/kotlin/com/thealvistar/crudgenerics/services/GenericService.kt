@@ -127,7 +127,7 @@ abstract class GenericService<T : Any, ID : Any>(
         principal: Principal? = null,
         projection: KClass<P>
     ): Page<P> =
-        rsqlFilter.filterResourcesProjection(
+        rsqlFilter.filterResources(
             filter = filter,
             pageable = pageable,
             principal = principal,

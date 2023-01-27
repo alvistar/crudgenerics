@@ -45,11 +45,11 @@ class RSQLFilter<T : Any, ID : Any>(
         return repository.findAll(specification, pageable)
     }
 
-    fun <P : Any> filterResourcesProjection(
-        projection: KClass<P>,
+    fun <P : Any> filterResources(
         filter: String? = null,
         pageable: Pageable = Pageable.unpaged(),
-        principal: Principal? = null
+        principal: Principal? = null,
+        projection: KClass<P>
     ): Page<P> {
         val specification = getListSpecification(filter, principal)
         return repository.findBy<T, Page<P>>(specification) {
