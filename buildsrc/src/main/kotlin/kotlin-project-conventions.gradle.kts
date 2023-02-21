@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.jpa")
     kotlin("plugin.spring")
+    `maven-publish`
 }
 
 group = "com.thealvistar.crudgenerics"
