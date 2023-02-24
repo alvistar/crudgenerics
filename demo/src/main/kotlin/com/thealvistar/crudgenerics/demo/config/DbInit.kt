@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 class DbInit(
     val productRepository: ProductRepository,
     val orderRepository: OrderRepository,
-    val categoryRepository: CategoryRepository
+    val categoryRepository: CategoryRepository,
 ) {
     @PostConstruct
     fun dbInit() {
@@ -28,15 +28,15 @@ class DbInit(
             productRepository.save(
                 Product(
                     name = faker.pokemon().name(),
-                    category = categories[it - 1]
-                )
+                    category = categories[it - 1],
+                ),
             )
         }
 
         val order = orderRepository.save(
             Order(
-                products = productRepository.findAll()
-            )
+                products = productRepository.findAll(),
+            ),
         )
     }
 }

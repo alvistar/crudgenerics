@@ -10,7 +10,7 @@ import org.springframework.web.servlet.resource.ResourceUrlProvider
 class CrudAutoconfiguration : WebMvcConfigurationSupport() {
     override fun routerFunctionMapping(
         conversionService: FormattingConversionService,
-        resourceUrlProvider: ResourceUrlProvider
+        resourceUrlProvider: ResourceUrlProvider,
     ): RouterFunctionMapping {
         return super.routerFunctionMapping(conversionService, resourceUrlProvider)
             .apply { order = -1 }

@@ -19,7 +19,7 @@ class IdFlatDeserializer<T : Any>(clazz: Class<T>? = null, property: BeanPropert
 
     override fun createContextual(
         ctxt: DeserializationContext,
-        property: BeanProperty
+        property: BeanProperty,
     ): JsonDeserializer<*> {
         @Suppress("UNCHECKED_CAST")
         // Check if are dealing with collection

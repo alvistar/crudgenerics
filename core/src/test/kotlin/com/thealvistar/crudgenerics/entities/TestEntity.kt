@@ -20,5 +20,5 @@ class TestEntity(
     var name: String? = null,
 
     @OneToOne
-    var reference: TestEntityWithOwnership? = null
+    var reference: TestEntityWithOwnership? = null,
 )

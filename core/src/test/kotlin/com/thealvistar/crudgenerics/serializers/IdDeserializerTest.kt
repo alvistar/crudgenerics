@@ -11,24 +11,24 @@ class IdDeserializerTest {
     data class Foo(
         var id: Int = 0,
         @JsonDeserialize(using = IdDeserializer::class)
-        var bar: Bar? = null
+        var bar: Bar? = null,
     )
 
     data class Bar(
         var id: Int = 0,
-        var name: String? = null
+        var name: String? = null,
     )
 
     data class FooUUID(
         var id: UUID? = null,
 
         @JsonDeserialize(using = IdDeserializer::class)
-        var bar: BarUUID? = null
+        var bar: BarUUID? = null,
     )
 
     data class BarUUID(
         var id: UUID? = null,
-        var name: String? = null
+        var name: String? = null,
     )
 
     @Test

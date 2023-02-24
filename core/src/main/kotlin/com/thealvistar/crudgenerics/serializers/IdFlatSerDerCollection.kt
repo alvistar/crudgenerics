@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER,
     AnnotationTarget.VALUE_PARAMETER,
-    AnnotationTarget.FIELD
+    AnnotationTarget.FIELD,
 )
 @Retention(
-    AnnotationRetention.RUNTIME
+    AnnotationRetention.RUNTIME,
 )
 @JacksonAnnotationsInside
 @JsonSerialize(contentUsing = IdFlatSerializer::class)

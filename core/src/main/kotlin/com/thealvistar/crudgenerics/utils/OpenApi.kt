@@ -19,7 +19,7 @@ fun requestBodyCustomizer(method: KFunction<*>, entityClass: KClass<*>): Operati
             val requestBody = RequestBody()
             requestBody.content = Content().addMediaType(
                 "application/json",
-                MediaType().schema(schema)
+                MediaType().schema(schema),
             )
             operation.requestBody = requestBody
             operation.operationId = "updateResourceById"

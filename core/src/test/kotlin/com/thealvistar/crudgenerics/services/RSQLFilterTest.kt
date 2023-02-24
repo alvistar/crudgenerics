@@ -22,7 +22,7 @@ import java.util.UUID
 @Import(RSQLJPAAutoConfiguration::class)
 class RSQLFilterTest(
     val repository: TestRepository,
-    val repositoryWithOwnership: TestWithOwnershipRepository
+    val repositoryWithOwnership: TestWithOwnershipRepository,
 ) {
     @Test
     fun `test filter resources`() {

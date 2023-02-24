@@ -23,5 +23,5 @@ class Product(
     var category: Category? = null,
 
     @ManyToMany(targetEntity = Category::class)
-    var categories: List<Category>? = null
+    var categories: List<Category>? = null,
 )

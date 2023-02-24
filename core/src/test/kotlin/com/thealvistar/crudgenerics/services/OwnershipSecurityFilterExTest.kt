@@ -1,6 +1,5 @@
 package com.thealvistar.crudgenerics.services
 
-import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.entities.TestEntityWithOwnership
 import com.thealvistar.crudgenerics.exceptions.ForbiddenException
 import com.thealvistar.crudgenerics.repositories.TestWithOwnershipRepository
@@ -13,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.test.context.TestConstructor
-import java.security.Principal
 import java.util.UUID
 
 @DataJpaTest
@@ -22,11 +20,11 @@ import java.util.UUID
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class OwnershipSecurityFilterExTest(
     val em: EntityManager,
-    val repository: TestWithOwnershipRepository
+    val repository: TestWithOwnershipRepository,
 ) {
     @Test
     fun initTest() {
-        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntityWithOwnership::class)
         securityFilter.relationships.apply {
             this?.size shouldBe 1
         }
@@ -34,7 +32,7 @@ class OwnershipSecurityFilterExTest(
 
     @Test
     fun canCreate() {
-        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntityWithOwnership::class)
         val johnId = UUID.randomUUID()
         val aliceID = UUID.randomUUID()
 
@@ -43,54 +41,54 @@ class OwnershipSecurityFilterExTest(
             repository.save(this)
         }
 
-        val iotSvc = TestEntity().apply {
+        val iotSvc = TestEntityWithOwnership().apply {
             this.reference = estServer
         }
 
         shouldNotThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { johnId.toString() })
+            securityFilter.canCreate(iotSvc) { johnId.toString() }
         }
 
         shouldThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
+            securityFilter.canCreate(iotSvc) { aliceID.toString() }
         }
     }
 
     @Test
     fun `canCreate with null id`() {
-        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntityWithOwnership::class)
         val johnId = UUID.randomUUID()
         val aliceID = UUID.randomUUID()
 
         val estServer = TestEntityWithOwnership()
 
-        val iotSvc = TestEntity().apply {
+        val iotSvc = TestEntityWithOwnership().apply {
             this.reference = estServer
         }
 
         shouldNotThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { johnId.toString() })
+            securityFilter.canCreate(iotSvc) { johnId.toString() }
         }
 
         shouldNotThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
+            securityFilter.canCreate(iotSvc) { aliceID.toString() }
         }
     }
 
     @Test
     fun `canCreate with null reference`() {
-        val securityFilter = OwnershipSecurityFilterEx(em, TestEntity::class)
+        val securityFilter = OwnershipSecurityFilterEx(em, TestEntityWithOwnership::class)
         val johnId = UUID.randomUUID()
         val aliceID = UUID.randomUUID()
 
-        val iotSvc = TestEntity()
+        val iotSvc = TestEntityWithOwnership()
 
         shouldNotThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { johnId.toString() })
+            securityFilter.canCreate(iotSvc) { johnId.toString() }
         }
 
         shouldNotThrow<ForbiddenException> {
-            securityFilter.canCreate(iotSvc, Principal { aliceID.toString() })
+            securityFilter.canCreate(iotSvc) { aliceID.toString() }
         }
     }
 }

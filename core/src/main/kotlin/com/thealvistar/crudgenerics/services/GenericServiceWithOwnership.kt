@@ -1,4 +1,6 @@
 package com.thealvistar.crudgenerics.services
 
-open class GenericServiceWithOwnership<T : Any, ID : Any> :
+import com.thealvistar.crudgenerics.entities.Ownership
+
+open class GenericServiceWithOwnership<T : Ownership, ID : Any> :
     GenericService<T, ID>(OwnershipSecurityFilter<T>())

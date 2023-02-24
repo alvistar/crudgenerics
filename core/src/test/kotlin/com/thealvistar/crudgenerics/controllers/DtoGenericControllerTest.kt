@@ -26,7 +26,7 @@ import java.util.UUID
 
 private data class FooDto(
     @field:Size(min = 1, max = 10)
-    val name: String
+    val name: String,
 )
 
 @Profile("test")
@@ -40,7 +40,7 @@ private class FakeController : DtoGenericController<TestEntity, UUID, FooDto>()
 class DtoGenericControllerTest(
     private val mockMvc: MockMvc,
     private val validator: Validator,
-    @MockkBean val service: GenericService<TestEntity, UUID>
+    @MockkBean val service: GenericService<TestEntity, UUID>,
 ) {
     @Test
     fun `list resources`() {
@@ -64,7 +64,7 @@ class DtoGenericControllerTest(
             service.listResources(
                 filter = "name==test",
                 pageable = match { it.pageSize == 10 && it.pageNumber == 0 },
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }
@@ -128,7 +128,7 @@ class DtoGenericControllerTest(
             service.updateResourceById(
                 id = uuid,
                 dto = match { (it as FooDto).name == "test" },
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }
@@ -153,7 +153,7 @@ class DtoGenericControllerTest(
 
         every { service.getResourceById(uuid, any()) } returns TestEntity(
             id = uuid,
-            name = "test"
+            name = "test",
         )
 
         mockMvc.get("/test/$uuid") {
@@ -185,7 +185,7 @@ class DtoGenericControllerTest(
         verify {
             service.createResource(
                 dto = match { (it as FooDto).name == "test" },
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }
@@ -210,7 +210,7 @@ class DtoGenericControllerTest(
             service.updateOwnership(
                 id = uuid,
                 newOwner = newUUID,
-                principal = any()
+                principal = any(),
             )
         }
     }

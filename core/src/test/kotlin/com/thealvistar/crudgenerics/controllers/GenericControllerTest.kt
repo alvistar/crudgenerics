@@ -37,7 +37,7 @@ private class FakeGenericController : GenericController<TestEntity, UUID, MyDto,
 @Import(FakeGenericController::class)
 class GenericControllerTest(
     private val mockMvc: MockMvc,
-    @MockkBean val service: GenericService<TestEntity, UUID>
+    @MockkBean val service: GenericService<TestEntity, UUID>,
 ) {
 
     @Test
@@ -65,7 +65,7 @@ class GenericControllerTest(
                 filter = "name==test",
                 pageable = match { it.pageSize == 10 && it.pageNumber == 0 },
                 principal = match { it.name == "john" },
-                projection = MyProjection::class
+                projection = MyProjection::class,
             )
         }
     }
@@ -87,7 +87,7 @@ class GenericControllerTest(
             service.createResource(
                 dto = match { it is MyDto },
                 principal = match { it.name == "john" },
-                clazz = MyProjection::class
+                clazz = MyProjection::class,
             )
         }
     }
@@ -109,7 +109,7 @@ class GenericControllerTest(
             service.getResourceById(
                 id = id,
                 principal = match { it.name == "john" },
-                clazz = MyProjection::class
+                clazz = MyProjection::class,
             )
         }
     }
@@ -121,7 +121,7 @@ class GenericControllerTest(
                 any(),
                 any(),
                 any(),
-                MyProjection::class
+                MyProjection::class,
             )
         } returns mockk()
 
@@ -141,7 +141,7 @@ class GenericControllerTest(
                 id = id,
                 dto = match { it is MyDto },
                 principal = match { it.name == "john" },
-                clazz = MyProjection::class
+                clazz = MyProjection::class,
             )
         }
     }
@@ -162,7 +162,7 @@ class GenericControllerTest(
         verify {
             service.deleteResourceById(
                 id = id,
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }
@@ -186,7 +186,7 @@ class GenericControllerTest(
         verify {
             service.deleteResourcesByIds(
                 ids = listOf(uuid1, uuid2),
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }
@@ -211,7 +211,7 @@ class GenericControllerTest(
             service.updateOwnership(
                 id = id,
                 newOwner = newUUID,
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToOne
 import org.springframework.context.annotation.Profile
 import java.util.UUID
 
@@ -16,5 +17,8 @@ class TestEntityWithOwnership(
 
     var name: String? = null,
 
-    override var owner: UUID? = null
+    override var owner: UUID? = null,
+
+    @OneToOne
+    var reference: TestEntityWithOwnership? = null,
 ) : Ownership

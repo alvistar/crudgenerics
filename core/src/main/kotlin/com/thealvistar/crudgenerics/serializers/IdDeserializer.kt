@@ -18,7 +18,7 @@ class IdDeserializer<T : Any>(private var clazz: Class<T>? = null) :
     ContextualDeserializer {
     override fun createContextual(
         ctxt: DeserializationContext,
-        property: BeanProperty?
+        property: BeanProperty?,
     ): JsonDeserializer<*> {
         return IdDeserializer(property?.type?.rawClass as Class<T>?)
     }

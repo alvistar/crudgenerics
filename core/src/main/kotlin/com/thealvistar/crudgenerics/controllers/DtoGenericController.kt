@@ -36,10 +36,17 @@ data class Prova(val name: String, val age: Int)
 
 abstract class PageProva : Page<Prova>
 
+/**
+ * Basic generic controller using entity for body requests and DTO for response.
+ * It contains all the basic CRUD operations.
+ * @param T The entity class
+ * @param D The DTO class
+ * @param ID The ID class
+ */
 @OptIn(ExperimentalStdlibApi::class)
 @Suppress("UNCHECKED_CAST")
 abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
-    service: GenericService<T, ID>? = null
+    service: GenericService<T, ID>? = null,
 ) {
     @Suppress("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired(required = false)
@@ -105,7 +112,7 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     fun createResource(
         principal: Principal?,
         @RequestBody @Valid
-        resourceDTO: D
+        resourceDTO: D,
     ): T = service.createResource(resourceDTO, principal)
 
     @PutMapping("/{id}/ownership")
@@ -113,7 +120,7 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     fun updateOwnership(
         @PathVariable id: ID,
         principal: Principal,
-        @RequestBody dto: UpdateOwnerDto
+        @RequestBody dto: UpdateOwnerDto,
     ) =
         service.updateOwnership(id, dto.owner, principal)
 
@@ -121,7 +128,7 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     fun updateResourceById(
         @PathVariable id: ID,
         principal: Principal?,
-        @Parameter(hidden = true) requestEntity: RequestEntity<String>
+        @Parameter(hidden = true) requestEntity: RequestEntity<String>,
     ): T {
         return if (dtoClass == entityClass) {
             // Use plain json
@@ -142,7 +149,7 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
         applicationContext.registerBean("${this::class.simpleName}operationCustomizer") {
             requestBodyCustomizer(
                 method,
-                dtoClass
+                dtoClass,
             )
         }
     }

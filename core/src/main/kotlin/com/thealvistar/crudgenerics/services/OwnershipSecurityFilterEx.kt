@@ -8,7 +8,14 @@ import java.security.Principal
 import java.util.UUID
 import kotlin.reflect.KClass
 
-class OwnershipSecurityFilterEx<T : Any>(val em: EntityManager, val entityClass: KClass<T>) :
+/**
+ * Extension of [OwnershipSecurityFilter] that checks if the owner of the resource is the same as the principal.
+ * This version also checks if the resource has relationships with other entities that are also
+ * [Ownership] and checks if the owner of the related entity is the same as the principal.
+ * This is to prevent a user from creating a resource that references another resource that
+ * belongs to another user.
+ */
+class OwnershipSecurityFilterEx<T : Ownership>(val em: EntityManager, val entityClass: KClass<T>) :
     OwnershipSecurityFilter<T>() {
     var relationships: List<Attribute<in T, *>>? = null
 
@@ -21,7 +28,7 @@ class OwnershipSecurityFilterEx<T : Any>(val em: EntityManager, val entityClass:
                     it.persistentAttributeType in
                     listOf(
                         Attribute.PersistentAttributeType.MANY_TO_ONE,
-                        Attribute.PersistentAttributeType.ONE_TO_ONE
+                        Attribute.PersistentAttributeType.ONE_TO_ONE,
                     )
             }
     }
@@ -47,7 +54,7 @@ class OwnershipSecurityFilterEx<T : Any>(val em: EntityManager, val entityClass:
 
             val relatedEntity = em.getReference(
                 relationship.javaType,
-                id
+                id,
             )
 
             val relatedEntityOwner = (relatedEntity as Ownership).owner

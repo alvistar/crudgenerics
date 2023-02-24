@@ -6,7 +6,11 @@ import org.springframework.data.jpa.domain.Specification
 import java.security.Principal
 import java.util.UUID
 
-open class OwnershipSecurityFilter<T : Any> : SecurityFilter<T> {
+/**
+ * A security filter that checks if the owner of the resource is the same as the principal.
+ *
+ */
+open class OwnershipSecurityFilter<T : Ownership> : SecurityFilter<T> {
     override fun getSpecificationForList(principal: Principal): Specification<T> {
         return Specification.where { root, _, cb ->
             cb.equal(root.get<Any>("owner"), UUID.fromString(principal.name))
@@ -14,10 +18,6 @@ open class OwnershipSecurityFilter<T : Any> : SecurityFilter<T> {
     }
 
     override fun canView(resource: T, principal: Principal?) {
-        if (resource !is Ownership) {
-            return
-        }
-
         if (principal == null) {
             throw ForbiddenException()
         }

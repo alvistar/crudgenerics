@@ -28,7 +28,7 @@ private class FakeBasicGenericController : BasicGenericController<TestEntity, UU
 @Import(FakeBasicGenericController::class)
 class BasicGenericControllerTest(
     private val mockMvc: MockMvc,
-    @MockkBean val service: GenericService<TestEntity, UUID>
+    @MockkBean val service: GenericService<TestEntity, UUID>,
 ) {
 
     @Test
@@ -51,7 +51,7 @@ class BasicGenericControllerTest(
             service.updateResourceById(
                 id = uuid,
                 dto = "{\"name\": \"test\"}",
-                principal = match { it.name == "john" }
+                principal = match { it.name == "john" },
             )
         }
     }

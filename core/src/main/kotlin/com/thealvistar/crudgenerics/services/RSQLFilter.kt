@@ -17,12 +17,12 @@ fun <T> ownershipSecurityFilter(principal: Principal): Specification<T> {
 
 class RSQLFilter<T : Any, ID : Any>(
     private val repository: JpaExecutor<T, ID>,
-    private val securityFilter: SecurityFilter<T>? = null
+    private val securityFilter: SecurityFilter<T>? = null,
 ) {
 
     private fun getListSpecification(
         filter: String? = null,
-        principal: Principal? = null
+        principal: Principal? = null,
     ): Specification<T> {
         val filterSpecification: Specification<T> = RSQLJPASupport.toSpecification(filter)
 
@@ -38,7 +38,7 @@ class RSQLFilter<T : Any, ID : Any>(
     fun filterResources(
         filter: String? = null,
         pageable: Pageable = Pageable.unpaged(),
-        principal: Principal? = null
+        principal: Principal? = null,
     ): Page<T> {
         val specification = getListSpecification(filter, principal)
 
@@ -49,7 +49,7 @@ class RSQLFilter<T : Any, ID : Any>(
         filter: String? = null,
         pageable: Pageable = Pageable.unpaged(),
         principal: Principal? = null,
-        projection: KClass<P>
+        projection: KClass<P>,
     ): Page<P> {
         val specification = getListSpecification(filter, principal)
         return repository.findBy<T, Page<P>>(specification) {

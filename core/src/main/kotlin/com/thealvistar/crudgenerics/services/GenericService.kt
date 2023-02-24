@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 
 @Suppress("SpringJavaInjectionPointsAutowiringInspection")
 abstract class GenericService<T : Any, ID : Any>(
-    protected open var securityFilter: SecurityFilter<T>? = null
+    protected open var securityFilter: SecurityFilter<T>? = null,
 ) {
 
     @Autowired
@@ -49,7 +49,7 @@ abstract class GenericService<T : Any, ID : Any>(
         resolveGeneric<T>(
             this,
             GenericService::class,
-            0
+            0,
         ).kotlin
     }
 
@@ -125,23 +125,23 @@ abstract class GenericService<T : Any, ID : Any>(
         filter: String? = null,
         pageable: Pageable = Pageable.ofSize(20),
         principal: Principal? = null,
-        projection: KClass<P>
+        projection: KClass<P>,
     ): Page<P> =
         rsqlFilter.filterResources(
             filter = filter,
             pageable = pageable,
             principal = principal,
-            projection = projection
+            projection = projection,
         )
 
     open fun listResources(
         filter: String? = null,
         pageable: Pageable = Pageable.ofSize(20),
-        principal: Principal? = null
+        principal: Principal? = null,
     ) = rsqlFilter.filterResources(
         filter = filter,
         pageable = pageable,
-        principal = principal
+        principal = principal,
     )
 
     fun <D : Any> createResource(dto: D, principal: Principal? = null): T {
@@ -154,7 +154,7 @@ abstract class GenericService<T : Any, ID : Any>(
     open fun <D : Any, P : Any> createResource(
         dto: D,
         principal: Principal? = null,
-        clazz: KClass<P>
+        clazz: KClass<P>,
     ): P {
         val entity = createResource(dto, principal)
 
@@ -179,7 +179,7 @@ abstract class GenericService<T : Any, ID : Any>(
         id: ID,
         dto: D,
         principal: Principal? = null,
-        clazz: KClass<P>
+        clazz: KClass<P>,
     ): P {
         val resource = updateResourceById(id, dto, principal)
         return pf.createProjection(clazz.java, resource)
@@ -209,7 +209,7 @@ abstract class GenericService<T : Any, ID : Any>(
     fun <P : Any> getResourcesByIds(
         ids: List<ID>,
         principal: Principal? = null,
-        clazz: KClass<P>
+        clazz: KClass<P>,
     ): List<P> {
         val resources = repository.findAllById(ids)
 

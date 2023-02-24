@@ -57,7 +57,7 @@ class GenericServiceTest(
     val service: TestService,
     val securityService: TestSecurityService,
     val ownershipService: TestOwnershipService,
-    val ownerRepository: TestWithOwnershipRepository
+    val ownerRepository: TestWithOwnershipRepository,
 ) {
     val principal = mockk<Principal>()
 
@@ -96,7 +96,7 @@ class GenericServiceTest(
         every { mockSecurityFilter.getSpecificationForList(principal) }.returns(
             Specification.where { root, _, cb ->
                 cb.notEqual(root.get<String>("name"), "TestEntity1")
-            }
+            },
         )
 
         securityService.listResources(principal = principal).apply {
@@ -117,7 +117,7 @@ class GenericServiceTest(
 
         service.listResources(
             pageable = Pageable.unpaged(),
-            projection = MyView::class
+            projection = MyView::class,
         ).apply {
             size shouldBe 3
             get().toList()[0].shouldBeInstanceOf<MyView>()
@@ -200,7 +200,7 @@ class GenericServiceTest(
         every {
             mockSecurityFilter.canView(
                 entity,
-                principal
+                principal,
             )
         }.throws(ForbiddenException())
 
@@ -208,7 +208,7 @@ class GenericServiceTest(
             securityService.updateResourceById(
                 entity.id!!,
                 dto = newEntity,
-                principal = principal
+                principal = principal,
             )
         }
     }
@@ -302,7 +302,7 @@ class GenericServiceTest(
         securityService.getResourceById(
             entity.id!!,
             clazz = MyView::class,
-            principal = principal
+            principal = principal,
         )
             .shouldBeInstanceOf<MyView>()
 
@@ -317,7 +317,7 @@ class GenericServiceTest(
 
         securityService.getResourcesByIds(
             entities.map { it.id!! },
-            principal = principal
+            principal = principal,
         ).apply {
             count() shouldBe 3
         }
@@ -332,14 +332,14 @@ class GenericServiceTest(
         every {
             mockSecurityFilter.canView(
                 any(),
-                principal
+                principal,
             )
         }.throws(ForbiddenException())
 
         shouldThrow<ForbiddenException> {
             securityService.getResourcesByIds(
                 entities.map { it.id!! },
-                principal = principal
+                principal = principal,
             )
         }
     }
@@ -360,7 +360,7 @@ class GenericServiceTest(
 
         service.getResourcesByIds(
             entities.map { it.id!! },
-            clazz = MyView::class
+            clazz = MyView::class,
         ).apply {
             count() shouldBe 3
             first().shouldBeInstanceOf<MyView>()
@@ -401,7 +401,7 @@ class GenericServiceTest(
         every {
             mockSecurityFilter.canView(
                 entity,
-                principal
+                principal,
             )
         }.throws(ForbiddenException())
 
@@ -420,7 +420,7 @@ class GenericServiceTest(
 
         securityService.deleteResourcesByIds(
             entities.map { it.id!! },
-            principal = principal
+            principal = principal,
         )
 
         verify(exactly = 3) { mockSecurityFilter.canView(any(), principal) }
@@ -432,7 +432,7 @@ class GenericServiceTest(
     fun `update ownership`() {
         val entity = TestEntityWithOwnership(
             name = "test",
-            owner = UUID.randomUUID()
+            owner = UUID.randomUUID(),
         )
         ownerRepository.save(entity)
 

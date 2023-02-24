@@ -18,5 +18,5 @@ class Order(
 
     @ManyToMany(targetEntity = Product::class)
     @IdFlatSerDerCollection
-    var products: List<Product>? = null
+    var products: List<Product>? = null,
 )

@@ -13,5 +13,5 @@ class Category(
     @GeneratedValue(strategy = GenerationType.UUID)
     var id: UUID? = null,
 
-    var name: String? = null
+    var name: String? = null,
 )

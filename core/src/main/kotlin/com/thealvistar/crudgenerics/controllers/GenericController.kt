@@ -32,8 +32,9 @@ import kotlin.reflect.KFunction
 val logger = mu.KotlinLogging.logger {}
 
 /**
- * This is the base controller for all the controllers that will be created.
+ * This is the full generic controller, supporting DTOs and projections.
  * It contains all the basic CRUD operations.
+ * Dto Class can be the entity itself
  * @param T The entity class
  * @param D The DTO class
  * @param ID The ID class
@@ -71,7 +72,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     fun listResources(
         pageable: Pageable,
         filter: String?,
-        principal: Principal?
+        principal: Principal?,
     ): Page<P> {
         return service.listResources(filter, pageable, principal, projectionClass)
     }
@@ -81,7 +82,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     fun createResource(
         principal: Principal?,
         @RequestBody @Valid
-        resourceDTO: D
+        resourceDTO: D,
     ): P {
         return service.createResource(resourceDTO, principal, clazz = projectionClass)
     }
@@ -105,7 +106,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     fun updateOwnership(
         @PathVariable id: ID,
         principal: Principal,
-        @RequestBody dto: UpdateOwnerDto
+        @RequestBody dto: UpdateOwnerDto,
     ) =
         service.updateOwnership(id, dto.owner, principal)
 
@@ -113,7 +114,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
     fun updateResourceById(
         @PathVariable id: ID,
         principal: Principal?,
-        @Parameter(hidden = true) requestEntity: RequestEntity<String>
+        @Parameter(hidden = true) requestEntity: RequestEntity<String>,
     ): P {
         return if (dtoClass == entityClass) {
             // Use plain json
@@ -134,7 +135,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
         applicationContext.registerBean("${this::class.simpleName}operationCustomizer") {
             requestBodyCustomizer(
                 method,
-                dtoClass
+                dtoClass,
             )
         }
     }

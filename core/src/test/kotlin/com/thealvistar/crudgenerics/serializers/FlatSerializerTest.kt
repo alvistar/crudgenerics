@@ -16,7 +16,7 @@ internal data class Foo(
 
     @JsonSerialize(contentUsing = IdFlatSerializer::class)
     @JsonDeserialize(contentUsing = IdFlatDeserializer::class)
-    var bars: List<Bar>? = null
+    var bars: List<Bar>? = null,
 )
 
 internal data class AnnotatedFoo(
@@ -26,12 +26,12 @@ internal data class AnnotatedFoo(
     var bar: Bar? = null,
 
     @IdFlatSerDerCollection
-    var bars: List<Bar>? = null
+    var bars: List<Bar>? = null,
 )
 
 internal data class Bar(
     var id: Int = 0,
-    var name: String? = null
+    var name: String? = null,
 )
 
 class FlatSerializerTest {
@@ -40,7 +40,7 @@ class FlatSerializerTest {
         val foo = Foo(
             id = 1,
             bar = Bar(id = 2, name = "bar"),
-            bars = listOf(Bar(id = 3, name = "bar1"), Bar(id = 4, name = "bar2"))
+            bars = listOf(Bar(id = 3, name = "bar1"), Bar(id = 4, name = "bar2")),
         )
 
         val json = jacksonObjectMapper().writeValueAsString(foo)
@@ -73,7 +73,7 @@ class FlatSerializerTest {
         val foo = AnnotatedFoo(
             id = 1,
             bar = Bar(id = 2, name = "bar"),
-            bars = listOf(Bar(id = 3, name = "bar1"), Bar(id = 4, name = "bar2"))
+            bars = listOf(Bar(id = 3, name = "bar1"), Bar(id = 4, name = "bar2")),
         )
 
         val json = jacksonObjectMapper().writeValueAsString(foo)
