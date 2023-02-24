@@ -5,7 +5,6 @@ import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
 import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
 import com.thealvistar.crudgenerics.utils.getGenerics
-import com.thealvistar.crudgenerics.utils.requestBodyCustomizer
 import com.thealvistar.crudgenerics.utils.throwIfNotEmpty
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.annotation.PostConstruct
@@ -13,7 +12,6 @@ import jakarta.validation.Valid
 import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.context.support.registerBean
 import org.springframework.core.convert.ConversionService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -31,7 +29,6 @@ import org.springframework.web.servlet.function.ServerRequest
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import java.security.Principal
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
 import kotlin.reflect.full.isSubclassOf
 
 /**
@@ -141,15 +138,13 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
 
     @PostConstruct
     fun setup() {
-        val method = this::class.members.filterIsInstance<KFunction<*>>()
-            .first { it.name == "updateResourceById" }
+        // Set correct request body in OpenApi documentation
 
-        applicationContext.registerBean("${this::class.simpleName}operationCustomizer") {
-            requestBodyCustomizer(
-                method,
-                dtoClass,
-            )
-        }
+        applicationContext.setRequestBody(
+            this::updateResourceById,
+            dtoClass,
+            this::class.simpleName!!,
+        )
 
         // Unregister updateMethod if entity is not assignable from Ownership
 

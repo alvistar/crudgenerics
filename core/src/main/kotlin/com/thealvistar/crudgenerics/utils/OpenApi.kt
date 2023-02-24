@@ -9,9 +9,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.jvm.javaMethod
 
-fun requestBodyCustomizer(method: KFunction<*>, entityClass: KClass<*>): OperationCustomizer {
+fun requestBodyCustomizer(
+    method: KFunction<*>,
+    entityClass: KClass<*>,
+    tag: String,
+): OperationCustomizer {
     return OperationCustomizer { operation, handlerMethod ->
-        if (handlerMethod.method == method.javaMethod!!) {
+        if (handlerMethod.method == method.javaMethod!! && operation.tags.getOrNull(0) == tag) {
             // convert entity class to openapi schema taking care of jackson annotations
 
             val schemas = ModelConverters.getInstance().read(entityClass.java)
