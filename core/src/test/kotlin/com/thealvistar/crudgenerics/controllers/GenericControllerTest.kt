@@ -193,8 +193,6 @@ class GenericControllerTest(
 
     @Test
     fun updateOwnership() {
-        every { service.updateOwnership(any(), any(), any()) } returns Unit
-
         val id = UUID.randomUUID()
         val newUUID = UUID.randomUUID()
 
@@ -204,15 +202,7 @@ class GenericControllerTest(
             principal = Principal { "john" }
         }
             .andExpect {
-                status { isNoContent() }
+                status { isNotFound() }
             }
-
-        verify {
-            service.updateOwnership(
-                id = id,
-                newOwner = newUUID,
-                principal = match { it.name == "john" },
-            )
-        }
     }
 }

@@ -195,23 +195,13 @@ class DtoGenericControllerTest(
         val uuid = UUID.randomUUID()
         val newUUID = UUID.randomUUID()
 
-        every { service.updateOwnership(uuid, any(), any()) } returns Unit
-
         mockMvc.put("/test/$uuid/ownership") {
             content = "{\"owner\": \"$newUUID\"}"
             contentType = MediaType.APPLICATION_JSON
             principal = Principal { uuid.toString() }
         }
             .andExpect {
-                status { isNoContent() }
+                status { isNotFound() }
             }
-
-        verify {
-            service.updateOwnership(
-                id = uuid,
-                newOwner = newUUID,
-                principal = any(),
-            )
-        }
     }
 }

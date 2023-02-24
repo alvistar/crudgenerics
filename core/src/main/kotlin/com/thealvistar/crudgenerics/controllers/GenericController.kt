@@ -2,6 +2,7 @@ package com.thealvistar.crudgenerics.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
+import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
 import com.thealvistar.crudgenerics.utils.getGenerics
 import com.thealvistar.crudgenerics.utils.requestBodyCustomizer
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import java.security.Principal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.full.isSubclassOf
 
 val logger = mu.KotlinLogging.logger {}
 
@@ -54,6 +57,9 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
 
     @Autowired
     lateinit var applicationContext: GenericApplicationContext
+
+    @Autowired
+    lateinit var requestMappingHandlerMapping: RequestMappingHandlerMapping
 
     val entityClass: KClass<T>
     val idClass: KClass<ID>
@@ -137,6 +143,12 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
                 method,
                 dtoClass,
             )
+        }
+
+        // Unregister updateMethod if entity is not assignable from Ownership
+
+        if (!entityClass.isSubclassOf(Ownership::class)) {
+            requestMappingHandlerMapping.unregisterMethod(this::updateOwnership)
         }
     }
 }

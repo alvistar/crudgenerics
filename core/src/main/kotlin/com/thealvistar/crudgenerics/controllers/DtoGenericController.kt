@@ -2,6 +2,7 @@ package com.thealvistar.crudgenerics.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
+import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
 import com.thealvistar.crudgenerics.utils.getGenerics
 import com.thealvistar.crudgenerics.utils.requestBodyCustomizer
@@ -31,10 +32,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import java.security.Principal
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-
-data class Prova(val name: String, val age: Int)
-
-abstract class PageProva : Page<Prova>
+import kotlin.reflect.full.isSubclassOf
 
 /**
  * Basic generic controller using entity for body requests and DTO for response.
@@ -151,6 +149,12 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
                 method,
                 dtoClass,
             )
+        }
+
+        // Unregister updateMethod if entity is not assignable from Ownership
+
+        if (!entityClass.isSubclassOf(Ownership::class)) {
+            requestMappingHandlerMapping.unregisterMethod(this::updateOwnership)
         }
     }
 }
