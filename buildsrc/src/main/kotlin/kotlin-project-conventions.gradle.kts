@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.jpa")
     kotlin("plugin.spring")
+    `maven-publish`
 }
 
 group = "com.thealvistar.crudgenerics"
@@ -15,6 +16,24 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/alvistar/crudgenerics")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("gpr") {
+            from(components["java"])
+        }
+    }
 }
 
 dependencies {
