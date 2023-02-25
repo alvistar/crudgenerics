@@ -4,14 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.thealvistar.crudgenerics.dtos.UpdateOwnerDto
 import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
+import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import com.thealvistar.crudgenerics.utils.getGenerics
+import com.thealvistar.crudgenerics.utils.getTag
 import com.thealvistar.crudgenerics.utils.throwIfNotEmpty
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.annotation.PostConstruct
 import jakarta.validation.Valid
 import jakarta.validation.Validator
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.support.GenericApplicationContext
 import org.springframework.core.convert.ConversionService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -54,13 +55,13 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     lateinit var conversionService: ConversionService
 
     @Autowired
-    lateinit var applicationContext: GenericApplicationContext
-
-    @Autowired
     lateinit var om: ObjectMapper
 
     @Autowired
     lateinit var validator: Validator
+
+    @Autowired
+    lateinit var customOperationCustomizer: CustomOperationCustomizer
 
     val entityClass: KClass<T>
     val idClass: KClass<ID>
@@ -140,10 +141,10 @@ abstract class DtoGenericController<T : Any, ID : Any, D : Any>(
     fun setup() {
         // Set correct request body in OpenApi documentation
 
-        applicationContext.setRequestBody(
+        customOperationCustomizer.setRequestBodyClass(
             this::updateResourceById,
+            this.getTag(),
             dtoClass,
-            this::class.simpleName!!,
         )
 
         // Unregister updateMethod if entity is not assignable from Ownership

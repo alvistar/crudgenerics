@@ -3,6 +3,7 @@ package com.thealvistar.crudgenerics.controllers
 import com.ninjasquad.springmockk.MockkBean
 import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.services.GenericService
+import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -25,7 +26,7 @@ private class FakeBasicGenericController : BasicGenericController<TestEntity, UU
 
 @WebMvcTest(FakeBasicGenericController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(FakeBasicGenericController::class)
+@Import(FakeBasicGenericController::class, CustomOperationCustomizer::class)
 class BasicGenericControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean val service: GenericService<TestEntity, UUID>,

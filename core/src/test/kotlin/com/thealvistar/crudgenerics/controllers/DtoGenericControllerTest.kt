@@ -3,6 +3,7 @@ package com.thealvistar.crudgenerics.controllers
 import com.ninjasquad.springmockk.MockkBean
 import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.services.GenericService
+import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import io.mockk.every
 import io.mockk.verify
 import jakarta.validation.Validator
@@ -36,7 +37,7 @@ private class FakeController : DtoGenericController<TestEntity, UUID, FooDto>()
 
 @WebMvcTest(FakeController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(FakeController::class)
+@Import(FakeController::class, CustomOperationCustomizer::class)
 class DtoGenericControllerTest(
     private val mockMvc: MockMvc,
     private val validator: Validator,
