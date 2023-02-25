@@ -8,6 +8,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
+import org.springframework.context.annotation.Profile
 import org.springframework.http.MediaType
 import org.springframework.test.context.TestConstructor
 import org.springframework.test.web.servlet.MockMvc
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.security.Principal
 import java.util.UUID
 
+@Profile("test")
 @RestController
 @RequestMapping("/test")
 private class FakeBasicGenericOwnershipController :

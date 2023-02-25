@@ -3,14 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.springframework.boot")
     id("io.spring.dependency-management")
+    id("version-conventions")
     kotlin("jvm")
     kotlin("plugin.jpa")
     kotlin("plugin.spring")
     `maven-publish`
+    signing
 }
-
-group = "com.thealvistar.crudgenerics"
-version = "0.1.0"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -20,19 +19,21 @@ repositories {
 
 publishing {
     repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/alvistar/crudgenerics")
-            credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
-            }
-        }
-    }
-    publications {
-        register<MavenPublication>("gpr") {
-            from(components["java"])
-        }
+//        maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/alvistar/crudgenerics")
+//            credentials {
+//                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+//                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+//            }
+//        }
+//        maven {
+//            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+//            credentials {
+//                username = project.findProperty("ossrhUsername") as String
+//                password = project.findProperty("ossrhPassword") as String
+//            }
+//        }
     }
 }
 
@@ -56,4 +57,9 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }

@@ -23,7 +23,7 @@ fun GenericApplicationContext.setRequestBody(
 ) {
     // Convert simpleClassName to kebab-case
     val operationId = simpleClassName
-        .replace("([A-Z])".toRegex(), "-$1")
+        .replace("([A-Z0-9])".toRegex(), "-$1")
         .lowercase(Locale.getDefault())
         .removePrefix("-")
 
