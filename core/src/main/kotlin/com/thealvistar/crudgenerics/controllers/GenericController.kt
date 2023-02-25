@@ -6,7 +6,6 @@ import com.thealvistar.crudgenerics.entities.Ownership
 import com.thealvistar.crudgenerics.services.GenericService
 import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import com.thealvistar.crudgenerics.utils.getGenerics
-import com.thealvistar.crudgenerics.utils.getTag
 import com.thealvistar.crudgenerics.utils.throwIfNotEmpty
 import io.swagger.v3.oas.annotations.Parameter
 import jakarta.annotation.PostConstruct
@@ -25,10 +24,12 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseStatus
+import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 import java.security.Principal
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.javaMethod
 
 val logger = mu.KotlinLogging.logger {}
 
@@ -136,9 +137,8 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
         // Set correct request body in OpenApi documentation
 
         customOperationCustomizer.setRequestBodyClass(
-            this::updateResourceById,
-            this.getTag(),
-            dtoClass,
+            HandlerMethod(this, this::updateResourceById.javaMethod!!),
+            this::class,
         )
 
         // Unregister updateMethod if entity is not assignable from Ownership

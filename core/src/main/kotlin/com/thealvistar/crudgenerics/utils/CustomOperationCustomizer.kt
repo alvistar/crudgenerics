@@ -9,22 +9,17 @@ import org.springdoc.core.customizers.OperationCustomizer
 import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import kotlin.reflect.KClass
-import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
 
 data class CustomOperation(
-    val method: KFunction<*>,
-    val tag: String,
+    val handlerMethod: HandlerMethod,
     val requestBodyClass: KClass<*>,
 )
 
 fun List<CustomOperation>.get(
-    operation: Operation,
     handlerMethod: HandlerMethod,
 ): CustomOperation? {
     return this.firstOrNull {
-        it.method.javaMethod == handlerMethod.method &&
-            operation.tags.getOrNull(0) == it.tag
+        it.handlerMethod == handlerMethod.createWithResolvedBean()
     }
 }
 
@@ -33,15 +28,14 @@ class CustomOperationCustomizer : OperationCustomizer {
     private val customOperations = mutableListOf<CustomOperation>()
 
     fun setRequestBodyClass(
-        method: KFunction<*>,
-        tag: String,
+        handlerMethod: HandlerMethod,
         requestBodyClass: KClass<*>,
     ) {
-        customOperations.add(CustomOperation(method, tag, requestBodyClass))
+        customOperations.add(CustomOperation(handlerMethod, requestBodyClass))
     }
 
     override fun customize(operation: Operation, handlerMethod: HandlerMethod): Operation {
-        val customOperation = customOperations.get(operation, handlerMethod) ?: return operation
+        val customOperation = customOperations.get(handlerMethod) ?: return operation
 
         val schemas = ModelConverters.getInstance().read(customOperation.requestBodyClass.java)
         val schema = schemas.values.first()
