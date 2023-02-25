@@ -45,7 +45,6 @@ class CustomOperationCustomizer : OperationCustomizer {
             MediaType().schema(schema),
         )
         operation.requestBody = requestBody
-        operation.operationId = "updateResourceById"
 
         return operation
     }
