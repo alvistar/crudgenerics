@@ -1,14 +1,15 @@
 package com.thealvistar.crudgenerics.controllers
 
 import com.ninjasquad.springmockk.MockkBean
+import com.thealvistar.crudgenerics.autoconfigure.CrudAutoconfiguration
 import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.services.GenericService
-import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import io.mockk.every
 import io.mockk.verify
 import jakarta.validation.Validator
 import jakarta.validation.constraints.Size
 import org.junit.jupiter.api.Test
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
@@ -37,7 +38,8 @@ private class FakeController : DtoGenericController<TestEntity, UUID, FooDto>()
 
 @WebMvcTest(FakeController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(FakeController::class, CustomOperationCustomizer::class)
+@Import(FakeController::class)
+@ImportAutoConfiguration(CrudAutoconfiguration::class)
 class DtoGenericControllerTest(
     private val mockMvc: MockMvc,
     private val validator: Validator,

@@ -1,12 +1,13 @@
 package com.thealvistar.crudgenerics.controllers
 
 import com.ninjasquad.springmockk.MockkBean
+import com.thealvistar.crudgenerics.autoconfigure.CrudAutoconfiguration
 import com.thealvistar.crudgenerics.entities.TestEntityWithOwnership
 import com.thealvistar.crudgenerics.services.GenericService
-import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
@@ -27,7 +28,8 @@ private class FakeBasicGenericOwnershipController :
 
 @WebMvcTest(FakeBasicGenericOwnershipController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(FakeBasicGenericOwnershipController::class, CustomOperationCustomizer::class)
+@Import(FakeBasicGenericOwnershipController::class)
+@ImportAutoConfiguration(CrudAutoconfiguration::class)
 class DtoGenericControllerOwnershipTest(
     private val mockMvc: MockMvc,
     @MockkBean

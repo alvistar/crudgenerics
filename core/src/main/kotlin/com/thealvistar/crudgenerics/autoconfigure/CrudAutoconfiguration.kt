@@ -1,18 +1,25 @@
 package com.thealvistar.crudgenerics.autoconfigure
 
-import org.springframework.format.support.FormattingConversionService
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
-import org.springframework.web.servlet.function.support.RouterFunctionMapping
-import org.springframework.web.servlet.resource.ResourceUrlProvider
+import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
+import org.springframework.boot.autoconfigure.AutoConfiguration
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
+import org.springframework.context.annotation.Bean
 
+// Not used today, but it can be used to customize the router function mapping order
 // @AutoConfiguration
 // @AutoConfigureBefore(WebMvcAutoConfiguration::class)
-class CrudAutoconfiguration : WebMvcConfigurationSupport() {
-    override fun routerFunctionMapping(
-        conversionService: FormattingConversionService,
-        resourceUrlProvider: ResourceUrlProvider,
-    ): RouterFunctionMapping {
-        return super.routerFunctionMapping(conversionService, resourceUrlProvider)
-            .apply { order = -1 }
-    }
+// class CrudAutoconfiguration : WebMvcConfigurationSupport() {
+//    override fun routerFunctionMapping(
+//        conversionService: FormattingConversionService,
+//        resourceUrlProvider: ResourceUrlProvider,
+//    ): RouterFunctionMapping {
+//        return super.routerFunctionMapping(conversionService, resourceUrlProvider)
+//            .apply { order = -1 }
+//    }
+// }
+
+@AutoConfiguration(before = [WebMvcAutoConfiguration::class])
+class CrudAutoconfiguration {
+    @Bean
+    fun operationCustomizer() = CustomOperationCustomizer()
 }

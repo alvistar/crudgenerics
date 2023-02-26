@@ -1,12 +1,13 @@
 package com.thealvistar.crudgenerics.controllers
 
 import com.ninjasquad.springmockk.MockkBean
+import com.thealvistar.crudgenerics.autoconfigure.CrudAutoconfiguration
 import com.thealvistar.crudgenerics.entities.TestEntity
 import com.thealvistar.crudgenerics.services.GenericService
-import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Profile
@@ -26,7 +27,8 @@ private class FakeBasicGenericController : BasicGenericController<TestEntity, UU
 
 @WebMvcTest(FakeBasicGenericController::class)
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(FakeBasicGenericController::class, CustomOperationCustomizer::class)
+@Import(FakeBasicGenericController::class)
+@ImportAutoConfiguration(CrudAutoconfiguration::class)
 class BasicGenericControllerTest(
     private val mockMvc: MockMvc,
     @MockkBean val service: GenericService<TestEntity, UUID>,

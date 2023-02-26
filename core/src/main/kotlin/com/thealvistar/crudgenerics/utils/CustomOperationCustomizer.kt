@@ -6,7 +6,6 @@ import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.MediaType
 import io.swagger.v3.oas.models.parameters.RequestBody
 import org.springdoc.core.customizers.OperationCustomizer
-import org.springframework.stereotype.Component
 import org.springframework.web.method.HandlerMethod
 import kotlin.reflect.KClass
 
@@ -23,7 +22,6 @@ fun List<CustomOperation>.get(
     }
 }
 
-@Component
 class CustomOperationCustomizer : OperationCustomizer {
     private val customOperations = mutableListOf<CustomOperation>()
 
