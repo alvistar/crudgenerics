@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Profile
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestConstructor
+import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.web.bind.annotation.RequestMapping
@@ -38,22 +39,46 @@ class OpenApiTest(
             .andExpect {
                 status { isOk() }
 
-                val propertiesPath = "\$.paths['/test/{id}'].put.requestBody." +
-                    "content['application/json'].schema.properties"
+                val schema = "\$.paths['/test/{id}'].put.requestBody." +
+                    "content['application/json'].schema"
 
-                jsonPath("$propertiesPath.id") { exists() }
-                jsonPath("$propertiesPath.name") { exists() }
-                jsonPath("$propertiesPath.reference") { exists() }
+                jsonPath("$schema.\$ref") { value("#/components/schemas/TestEntity") }
+                jsonPath("\$.components['schemas']['TestEntity']") { exists() }
 
-                val propertiesPath2 = "\$.paths['/test2/{id}'].put.requestBody." +
-                    "content['application/json'].schema.properties"
+                val schema2 = "\$.paths['/test2/{id}'].put.requestBody." +
+                    "content['application/json'].schema"
 
-                jsonPath("$propertiesPath2.id") { exists() }
-                jsonPath("$propertiesPath2.name") { exists() }
-                jsonPath("$propertiesPath2.reference") { exists() }
-                jsonPath("$propertiesPath2.owner") {
-                    exists()
-                }
+                jsonPath("$schema2.\$ref") { value("#/components/schemas/TestEntityWithOwnership") }
+                jsonPath("\$.components['schemas']['TestEntityWithOwnership']") { exists() }
+            }
+    }
+}
+
+@SpringBootTest()
+@TestPropertySource(properties = ["springdoc.use-fqn=true"])
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@ActiveProfiles("openApi")
+@AutoConfigureMockMvc
+class OpenApiFQN(
+    private val mockMvc: MockMvc,
+) {
+    @Test
+    fun openApi() {
+        mockMvc.get("/v3/api-docs")
+            .andExpect {
+                status { isOk() }
+
+                val schema = "\$.paths['/test/{id}'].put.requestBody." +
+                    "content['application/json'].schema"
+
+                jsonPath("$schema.\$ref") { value("#/components/schemas/com.thealvistar.crudgenerics.entities.TestEntity") }
+                jsonPath("\$.components['schemas']['com.thealvistar.crudgenerics.entities.TestEntity']") { exists() }
+
+                val schema2 = "\$.paths['/test2/{id}'].put.requestBody." +
+                    "content['application/json'].schema"
+
+                jsonPath("$schema2.\$ref") { value("#/components/schemas/com.thealvistar.crudgenerics.entities.TestEntityWithOwnership") }
+                jsonPath("\$.components['schemas']['com.thealvistar.crudgenerics.entities.TestEntityWithOwnership']") { exists() }
             }
     }
 }

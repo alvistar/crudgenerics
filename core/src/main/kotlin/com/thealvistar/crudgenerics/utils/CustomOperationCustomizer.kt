@@ -1,11 +1,12 @@
 package com.thealvistar.crudgenerics.utils
 
-import io.swagger.v3.core.converter.ModelConverters
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.media.Content
 import io.swagger.v3.oas.models.media.MediaType
+import io.swagger.v3.oas.models.media.Schema
 import io.swagger.v3.oas.models.parameters.RequestBody
 import org.springdoc.core.customizers.OperationCustomizer
+import org.springdoc.core.properties.SpringDocConfigProperties
 import org.springframework.web.method.HandlerMethod
 import kotlin.reflect.KClass
 
@@ -22,7 +23,8 @@ fun List<CustomOperation>.get(
     }
 }
 
-class CustomOperationCustomizer : OperationCustomizer {
+class CustomOperationCustomizer(val configuration: SpringDocConfigProperties) :
+    OperationCustomizer {
     private val customOperations = mutableListOf<CustomOperation>()
 
     fun setRequestBodyClass(
@@ -35,8 +37,15 @@ class CustomOperationCustomizer : OperationCustomizer {
     override fun customize(operation: Operation, handlerMethod: HandlerMethod): Operation {
         val customOperation = customOperations.get(handlerMethod) ?: return operation
 
-        val schemas = ModelConverters.getInstance().read(customOperation.requestBodyClass.java)
-        val schema = schemas.values.first()
+        val schemaName = if (configuration.isUseFqn) {
+            customOperation.requestBodyClass.java.name
+        } else {
+            customOperation.requestBodyClass.java.simpleName
+        }
+
+        val schema = Schema<Any>().`$ref`(
+            "#/components/schemas/$schemaName",
+        )
         val requestBody = RequestBody()
         requestBody.content = Content().addMediaType(
             "application/json",

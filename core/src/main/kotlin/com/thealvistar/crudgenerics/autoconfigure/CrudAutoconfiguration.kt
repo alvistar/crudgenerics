@@ -1,6 +1,7 @@
 package com.thealvistar.crudgenerics.autoconfigure
 
 import com.thealvistar.crudgenerics.utils.CustomOperationCustomizer
+import org.springdoc.core.properties.SpringDocConfigProperties
 import org.springframework.boot.autoconfigure.AutoConfiguration
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 import org.springframework.context.annotation.Bean
@@ -21,5 +22,6 @@ import org.springframework.context.annotation.Bean
 @AutoConfiguration(before = [WebMvcAutoConfiguration::class])
 class CrudAutoconfiguration {
     @Bean
-    fun operationCustomizer() = CustomOperationCustomizer()
+    fun operationCustomizer(configuration: SpringDocConfigProperties) =
+        CustomOperationCustomizer(configuration)
 }

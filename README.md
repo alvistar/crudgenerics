@@ -40,3 +40,8 @@ interface OrderRepository : JpaExecutor<Order, UUID>
 ## Opeanapi documentation
 The library will generate openapi documentation for the controller.
 You can access it by going to /swagger-ui/index.html
+
+Library is doing some openapi customization in order to provide dynamic configuration.
+Specifically it sets responseBody of some methods to be a reference of existing schemas.
+
+In order to avoid name clashes you can consider to set springdoc.use-fqn=true.
