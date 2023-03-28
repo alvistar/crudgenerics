@@ -138,7 +138,7 @@ abstract class GenericController<T : Any, ID : Any, D : Any, P : Any> {
 
         customOperationCustomizer.setRequestBodyClass(
             HandlerMethod(this, this::updateResourceById.javaMethod!!),
-            this::class,
+            dtoClass,
         )
 
         // Unregister updateMethod if entity is not assignable from Ownership
